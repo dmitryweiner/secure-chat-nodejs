@@ -1,17 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var crypto = require('crypto');
 var User   = require('../models/user'); // get our mongoose model
 var config = require('../config'); // get our config file
 
 var app = express();
 
-// route to authenticate a user (POST http://localhost:8080/api/authenticate)
 router.post('/authenticate', function(req, res) {
 
   // find the user
   User.findOne({
-    name: req.body.name
+    username: req.body.username
   }, function(err, user) {
 
     if (err) throw err;
@@ -21,7 +21,8 @@ router.post('/authenticate', function(req, res) {
     } else if (user) {
 
       // check if password matches
-      if (user.password != req.body.password) {
+      var currentPassword = crypto.createHash('md5').update(req.body.password + user.salt).digest("hex");
+      if (user.password !== currentPassword) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
 
@@ -41,6 +42,43 @@ router.post('/authenticate', function(req, res) {
 
     }
 
+  });
+});
+
+router.post('/register', function(req, res) {
+  //check if username already exists
+  User.findOne({
+    username: req.body.username
+  }, function(err, user) {
+    if (user) {
+      res.json({
+        success: false,
+        message: "User already exists"
+      });
+      return;
+    }
+
+    var salt = Math.random().toString(36);
+    var newUser = new User({
+      username: req.body.username,
+      password: crypto.createHash('md5').update(req.body.password + salt).digest("hex"),
+      salt: salt,
+      isAdmin: false
+    });
+
+    newUser.save(function (err) {
+      if (err) {
+        res.json({
+          success: false,
+          message: err.message
+        });
+        return;
+      }
+      res.json({
+        success: true,
+        message: "User saved successfully"
+      });
+    });
   });
 });
 
