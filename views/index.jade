@@ -2,7 +2,7 @@ extends layout
 
 block content
   div
-    ul(class="nav nav-tabs" role="tablist")
+    ul#mainTabs(class="nav nav-tabs" role="tablist")
       li(role="presentation" class="active")
         a(href="#login" aria-controls="login" role="tab" data-toggle="tab") Login / Register
       li(role="presentation")
@@ -12,51 +12,10 @@ block content
 
     .tab-content(style="padding-top:10px;")
       div(role="tabpanel" class="tab-pane active" id="login")
-        div
-          ul(class="nav nav-tabs" role="tablist")
-            li(role="presentation" class="active")
-              a(href="#loginForm" aria-controls="loginForm" role="tab" data-toggle="tab") Login
-            li(role="presentation")
-              a(href="#registerForm" aria-controls="registerForm" role="tab" data-toggle="tab") Register
-
-          .tab-content(style="padding-top:10px;")
-            div(role="tabpanel" class="tab-pane active" id="loginForm")
-
-              div(class="alert fade in hidden" role="alert")
-                span.alert-text
-
-              form(style="max-width: 400px")
-                .form-group
-                  label(for="username") Username
-                  input.form-control(type="text" id="username" placeholder="Username")
-                .form-group
-                  label(for="password") Password
-                  input.form-control(type="password" id="password")
-                button(type="submit" class="btn btn-default") Login!
-
-            div(role="tabpanel" class="tab-pane" id="registerForm")
-
-              div(class="alert fade in hidden" role="alert")
-                span.alert-text
-
-              form(style="max-width: 400px")
-                .form-group
-                  label(for="registerFormUsername") Username
-                  input.form-control(type="text" id="registerFormUsername" placeholder="Username")
-                .form-group
-                  label(for="registerFormPassword") Password
-                  input.form-control(type="password" id="registerFormPassword")
-                .form-group
-                  label(for="registerFormPasswordReenter") Reenter password
-                  input.form-control(type="password" id="registerFormPasswordReenter")
-                button(type="submit" class="btn btn-default") Register!
+        include login
 
       div(role="tabpanel" class="tab-pane" id="contacts")
-        ul
-          li John
-          li Jack
+        include contacts
 
       div(role="tabpanel" class="tab-pane" id="chats")
-        ul
-          li Hi, John!
-          li Hi, Jack!
+        include messages

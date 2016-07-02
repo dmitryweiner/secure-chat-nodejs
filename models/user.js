@@ -7,5 +7,6 @@ module.exports = mongoose.model('User', new Schema({
   username: {type: String, unique: true },
   password: String,
   salt: String,
-  isAdmin: Boolean
+  isAdmin: Boolean,
+  contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 }));

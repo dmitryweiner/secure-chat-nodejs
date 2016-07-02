@@ -36,7 +36,11 @@ router.post('/authenticate', function(req, res) {
         res.json({
           success: true,
           message: 'Enjoy your token!',
-          token: token
+          token: token,
+          user: {
+            username: user.username,
+            isAdmin: user.isAdmin
+          }
         });
       }
 
@@ -114,10 +118,83 @@ router.use(function(req, res, next) {
   }
 });
 
-// route to return all users (GET http://localhost:8080/api/users)
-router.get('/users', function(req, res) {
-  User.find({}, function(err, users) {
-    res.json(users);
+router.get('/contacts/:currentUser', function(req, res) {
+  User.findOne({"users.username": req.query.currentUser}, function(err, user) {
+    console.log("Found user", user.username);
+    var contacts;
+    if (user) {
+      User.populate(user, {
+        path: 'contacts',
+        model: 'User'
+      }, function (err, user) {
+        console.log("Populated", user.contacts);
+        var contacts = user.contacts.map(function(contact) {
+          return {
+            username: contact.username
+          };
+        });
+        res.json({
+          success: true,
+          contacts: contacts
+        });
+      });
+      return;
+    }
+    res.json({
+      success: false,
+      message: "No user found",
+      contacts: []
+    });
+  });
+});
+
+router.post('/contacts/add', function(req, res) {
+  Promise.all([
+    User.findOne({username: req.body.userToAdd}),
+    User.findOne({username: req.body.currentUser})
+  ]).then(function(results) {
+    var userToAdd = results[0];
+    var currentUser = results[1];
+    if (!userToAdd || !currentUser) {
+      res.json({
+        success: false,
+        message: "User not found",
+        contacts: []
+      });
+      return;
+    }
+
+    currentUser.contacts.push(userToAdd);
+
+    currentUser.save(function (err) {
+      if (err) {
+        res.json({
+          success: false,
+          message: err.message,
+          contacts: []
+        });
+        return;
+      }
+
+      User.populate(currentUser, {
+        path: 'contacts',
+        model: 'User'
+      }, function (err, user) {
+        var contacts = user.contacts.map(function(contact) {
+          return {
+            username: contact.username
+          };
+        });
+        res.json({
+          success: true,
+          message: "User saved successfully",
+          contacts: contacts
+        });
+      });
+
+    });
+
+
   });
 });
 

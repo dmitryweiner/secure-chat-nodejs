@@ -7,11 +7,20 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.min.css')
     script(type='text/javascript', src='/javascripts/libs/jquery-2.2.4.min.js')
     script(type='text/javascript', src='/javascripts/libs/bootstrap.min.js')
+    script(type='text/javascript', src='/javascripts/local-storage.js')
+    script(type='text/javascript', src='/javascripts/api.js')
+    script(type='text/javascript', src='/javascripts/auth.js')
+    script(type='text/javascript', src='/javascripts/panel.js')
     script(type='text/javascript', src='/javascripts/main.js')
   body
     .container
+      nav(class="navbar navbar-full navbar-light" style="background-color: #e3f2fd;")
+        a(class="navbar-brand" href="#") Secure chat
+        ul(class="nav navbar-nav navbar-right")
+          li
+            p.navbar-text(style="margin-right:30px")
+              span.user-name(style="margin-right:10px")
+              a(id="loginLink") Login
       .row
         .col-sm-12
-          h1 Secure chat
-
           block content
