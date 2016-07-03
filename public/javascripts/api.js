@@ -37,7 +37,7 @@ SecureChat.API = (function () {
     }
 
     $.ajax({
-      url: apiUrl + "/contacts/" + encodeURIComponent(SecureChat.Auth.getCurrenUser().username),
+      url: apiUrl + "/contacts",
       headers: {
         'x-access-token': token
       },
@@ -60,8 +60,7 @@ SecureChat.API = (function () {
       url: apiUrl + "/contacts/add",
       method: "POST",
       data: {
-        userToAdd: userToAdd,
-        currentUser: SecureChat.Auth.getCurrenUser().username
+        userToAdd: userToAdd
       },
       headers: {
         'x-access-token': token

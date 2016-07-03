@@ -12,7 +12,7 @@ router.post('/authenticate', function(req, res) {
   // find the user
   User.findOne({
     username: req.body.username
-  }, function(err, user) {
+  }).lean().exec(function(err, user) {
 
     if (err) throw err;
 
@@ -101,7 +101,7 @@ router.use(function(req, res, next) {
         return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes
-        req.decoded = decoded;
+        req.authUser = decoded;
         next();
       }
     });
@@ -118,16 +118,14 @@ router.use(function(req, res, next) {
   }
 });
 
-router.get('/contacts/:currentUser', function(req, res) {
-  User.findOne({"users.username": req.query.currentUser}, function(err, user) {
-    console.log("Found user", user.username);
+router.get('/contacts', function(req, res) {
+  User.findOne({"username": req.authUser.username}, function(err, user) {
     var contacts;
     if (user) {
       User.populate(user, {
         path: 'contacts',
         model: 'User'
       }, function (err, user) {
-        console.log("Populated", user.contacts);
         var contacts = user.contacts.map(function(contact) {
           return {
             username: contact.username
@@ -151,11 +149,11 @@ router.get('/contacts/:currentUser', function(req, res) {
 router.post('/contacts/add', function(req, res) {
   Promise.all([
     User.findOne({username: req.body.userToAdd}),
-    User.findOne({username: req.body.currentUser})
+    User.findOne({username: req.authUser.username})
   ]).then(function(results) {
     var userToAdd = results[0];
     var currentUser = results[1];
-    if (!userToAdd || !currentUser) {
+    if (!userToAdd) {
       res.json({
         success: false,
         message: "User not found",

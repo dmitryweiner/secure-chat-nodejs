@@ -32,6 +32,9 @@ SecureChat.Panel = (function () {
       SecureChat.API.register($username.val(), $password.val(), function(data) {
         if(data.success) {
           $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully created");
+          $username.val("");
+          $password.val("");
+          showLoginTab();
         } else {
           $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
         }
@@ -51,9 +54,10 @@ SecureChat.Panel = (function () {
       SecureChat.Auth.doAuthenticate($username.val(), $password.val(), function(data) {
         if(data.success) {
           $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully authenticated");
+          $username.val("");
+          $password.val("");
           panelState = PanelStates.LOGGED;
           redrawPanel();
-          showContactsTab();
         } else {
           $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
         }
@@ -71,6 +75,7 @@ SecureChat.Panel = (function () {
       }
       SecureChat.API.addContact($contact.val(), function(data) {
         if(data.success) {
+          $contact.val("");
           showContacts(data.contacts);
         } else {
           $alert.removeClass("hidden").find("span.alert-text").text(data.message);
@@ -119,7 +124,6 @@ SecureChat.Panel = (function () {
 
   function showContactsTab() {
     $('#mainTabs a[href="#contacts"]').tab('show');
-    loadAndShowContacts();
   }
 
   function loadAndShowContacts() {
