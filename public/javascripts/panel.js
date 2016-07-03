@@ -9,10 +9,9 @@ SecureChat.Panel = (function () {
 
   var panelState = null;
 
-  function init() {
+  var isShowingMessages = false;
 
-    panelState = SecureChat.Auth.isLogged() ? PanelStates.LOGGED : PanelStates.NOT_LOGGED;
-    redrawPanel();
+  function init() {
 
     $("#registerForm").on("submit", function() {
       var $username = $("#registerFormUsername");
@@ -84,9 +83,33 @@ SecureChat.Panel = (function () {
       return false;
     });
 
-    $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+    $("#addMessageForm").on("submit", function() {
+      var $receiver = $("#receiver");
+      var $message = $("#addMessage");
+      var $alert = $("#messages .alert");
+      $alert.addClass("hidden").find("span.alert-text").text("");
+      if (!$message.val()) {
+        return false;
+      }
+      SecureChat.API.addMessage($receiver.val(), $message.val(), function(data) {
+        if(data.success) {
+          $message.val("");
+          showMessages(data.messages);
+        } else {
+          $alert.removeClass("hidden").find("span.alert-text").text(data.message);
+        }
+      });
+      return false;
+    });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      isShowingMessages = false;
       if ('#contacts' === $(e.target).attr('href')) {
         loadAndShowContacts();
+      }
+      if ('#messages' === $(e.target).attr('href')) {
+        loadAndShowMessages();
+        isShowingMessages = true;
       }
     });
 
@@ -99,6 +122,16 @@ SecureChat.Panel = (function () {
       }
       redrawPanel();
     });
+
+    $(document.body).on('click', '#contactList li', function() {
+      var username = $(this).data("username");
+      $("#receiver").val(username);
+      $("span#receiverName").text(username);
+      showMessagesTab();
+    });
+
+    panelState = SecureChat.Auth.isLogged() ? PanelStates.LOGGED : PanelStates.NOT_LOGGED;
+    redrawPanel();
 
   }
 
@@ -126,16 +159,45 @@ SecureChat.Panel = (function () {
     $('#mainTabs a[href="#contacts"]').tab('show');
   }
 
+  function showMessagesTab() {
+    $('#mainTabs a[href="#messages"]').tab('show');
+  }
+
   function loadAndShowContacts() {
     SecureChat.API.getContacts(function(data) {
       showContacts(data.contacts);
     });
   }
 
+  function loadAndShowMessages() {
+    var receiver = $("#receiver").val();
+    if (!receiver) {
+      return;
+    }
+    SecureChat.API.getMessages(receiver, function(data) {
+      showMessages(data.messages);
+      if (isShowingMessages) {
+        setTimeout(loadAndShowMessages, 2000);
+      }
+    });
+  }
+
   function showContacts(contacts) {
     $("#contactList li").remove();
     contacts.forEach(function(contact) {
-      $("#contactList").append("<li class='list-group-item'>" + contact.username +"</li>");
+      $("#contactList").append("<li class='list-group-item' data-username='" + contact.username + "'>" + contact.username +"</li>");
+    });
+  }
+
+  function showMessages(messages) {
+    // TODO: here should be more intellectual message adding
+    $("#messageList li").remove();
+    messages.forEach(function(message) {
+      var style="";
+      if (message.isOwn) {
+        style = "background-color:#adadad;"
+      }
+      $("#messageList").append("<li class='list-group-item' style='" + style + "'>" + message.messageText +"</li>");
     });
   }
 

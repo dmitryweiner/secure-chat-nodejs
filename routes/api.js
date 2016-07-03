@@ -2,8 +2,11 @@ var express = require('express');
 var router = express.Router();
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var crypto = require('crypto');
-var User   = require('../models/user'); // get our mongoose model
-var config = require('../config'); // get our config file
+var mongoose = require('mongoose');
+
+var User   = require('../models/user');
+var Message   = require('../models/message');
+var config = require('../config');
 
 var app = express();
 
@@ -119,7 +122,7 @@ router.use(function(req, res, next) {
 });
 
 router.get('/contacts', function(req, res) {
-  User.findOne({"username": req.authUser.username}, function(err, user) {
+  User.findOne({"username": req.authUser.username}, function(err, user) { // TODO: may be we should search by Object ID
     var contacts;
     if (user) {
       User.populate(user, {
@@ -194,6 +197,118 @@ router.post('/contacts/add', function(req, res) {
 
 
   });
+});
+
+router.get('/messages/:receiver', function(req, res) {
+  console.log("req.query.receiver", req.params.receiver);
+  User.findOne({"username": req.params.receiver}, function(err, receiver) {
+    if (!receiver) {
+      res.json({
+        success: false,
+        message: "User not found",
+        messages: []
+      });
+      return;
+    }
+    Message.find({
+      $and: [
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(req.authUser._id)},
+          {"receiver": mongoose.Types.ObjectId(req.authUser._id)}] },
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(receiver._id)},
+          {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
+      ]
+    },
+    null,
+    {sort: {"dateCreated": -1}})
+    .limit(20).exec(
+      function(err, messages) {
+        var filteredMessages = messages.map(function(message) {
+          return {
+            messageText: message.messageText,
+            isOwn: message.sender == req.authUser._id
+          };
+        });
+        res.json({
+          success: true,
+          messages: filteredMessages
+        });
+    });
+  });
+});
+
+
+router.post('/messages/add', function(req, res) {
+  Promise.all([
+    User.findOne({username: req.body.receiver}),
+    User.findOne({username: req.authUser.username})
+  ]).then(function(results) {
+    var receiver = results[0];
+    var currentUser = results[1];
+    if (!receiver) {
+      res.json({
+        success: false,
+        message: "User not found",
+        contacts: []
+      });
+      return;
+    }
+
+    var newMessage = new Message({
+      messageText: req.body.messageText,
+      sender: mongoose.Types.ObjectId(currentUser._id),
+      receiver: mongoose.Types.ObjectId(receiver._id)
+    });
+
+    newMessage.save(function (err) {
+      if (err) {
+        console.log("error", err.message);
+        res.json({
+          success: false,
+          message: err.message,
+          messages: []
+        });
+        return;
+      }
+
+      Message.find({
+        $and: [
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(currentUser._id)},
+          {"receiver": mongoose.Types.ObjectId(currentUser._id)}] },
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(receiver._id)},
+          {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
+         ]},
+        null,
+        {sort: {"dateCreated": -1}})
+        .limit(20).exec(
+        function(err, messages) {
+          if (err) {
+            res.json({
+              success: false,
+              message: err.message,
+              messages: []
+            });
+            return;
+          }
+          var filteredMessages = messages.map(function(message) {
+            return {
+              messageText: message.messageText,
+              isOwn: message.sender == req.authUser._id
+            };
+          });
+          res.json({
+            success: true,
+            messages: filteredMessages
+          });
+      });
+    });
+
+
+  });
+
 });
 
 module.exports = router;

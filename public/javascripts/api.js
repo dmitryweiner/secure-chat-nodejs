@@ -38,6 +38,7 @@ SecureChat.API = (function () {
 
     $.ajax({
       url: apiUrl + "/contacts",
+      method: "GET",
       headers: {
         'x-access-token': token
       },
@@ -74,10 +75,58 @@ SecureChat.API = (function () {
     });
   }
 
+  function getMessages(receiver, callback) {
+    var token = SecureChat.Auth.getToken();
+    if (!token) {
+      callback(null);
+    }
+
+    $.ajax({
+      url: apiUrl + "/messages/" + encodeURIComponent(receiver),
+      method: "GET",
+      headers: {
+        'x-access-token': token
+      },
+      success: function(data) {
+        callback(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        callback(null);
+      }
+    });
+  }
+
+  function addMessage(receiver, messageText, callback) {
+    var token = SecureChat.Auth.getToken();
+    if (!token) {
+      callback(null);
+    }
+
+    $.ajax({
+      url: apiUrl + "/messages/add",
+      method: "POST",
+      data: {
+        receiver: receiver,
+        messageText: messageText
+      },
+      headers: {
+        'x-access-token': token
+      },
+      success: function(data) {
+        callback(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        callback(null);
+      }
+    });
+  }
+
   return {
     register: register,
     authenticate: authenticate,
     getContacts: getContacts,
-    addContact: addContact
+    addContact: addContact,
+    getMessages: getMessages,
+    addMessage: addMessage
   };
 })();

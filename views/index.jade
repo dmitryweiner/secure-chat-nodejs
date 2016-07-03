@@ -4,11 +4,11 @@ block content
   div
     ul#mainTabs(class="nav nav-tabs" role="tablist")
       li(role="presentation" class="active")
-        a(href="#login" aria-controls="login" role="tab" data-toggle="tab") Login / Register
+        a(href="#login" aria-controls="login" role="tab" data-toggle="tab") User
       li(role="presentation")
         a(href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab") Contacts
       li(role="presentation")
-        a(href="#chats" aria-controls="chats" role="tab" data-toggle="tab") Chats
+        a(href="#messages" aria-controls="messages" role="tab" data-toggle="tab") Messages
 
     .tab-content(style="padding-top:10px;")
       div(role="tabpanel" class="tab-pane active" id="login")
@@ -17,5 +17,5 @@ block content
       div(role="tabpanel" class="tab-pane" id="contacts")
         include contacts
 
-      div(role="tabpanel" class="tab-pane" id="chats")
+      div(role="tabpanel" class="tab-pane" id="messages")
         include messages
