@@ -31,9 +31,12 @@ SecureChat.Panel = (function () {
       SecureChat.API.register($username.val(), $password.val(), function(data) {
         if(data.success) {
           $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully created");
+          setTimeout(function() {
+            $alert.addClass("hidden");
+            showLoginTab();
+          }, 1000);
           $username.val("");
           $password.val("");
-          showLoginTab();
         } else {
           $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
         }
@@ -53,10 +56,13 @@ SecureChat.Panel = (function () {
       SecureChat.Auth.doAuthenticate($username.val(), $password.val(), function(data) {
         if(data.success) {
           $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully authenticated");
+          setTimeout(function() {
+            $alert.addClass("hidden");
+            redrawPanel();
+          }, 1000);
           $username.val("");
           $password.val("");
           panelState = PanelStates.LOGGED;
-          redrawPanel();
         } else {
           $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
         }
@@ -130,6 +136,13 @@ SecureChat.Panel = (function () {
       showMessagesTab();
     });
 
+    $("#addMessage").keypress(function(event) {
+      if (event.which == 13) {
+        event.preventDefault();
+        $("#addMessageForm").submit();
+      }
+    });
+
     panelState = SecureChat.Auth.isLogged() ? PanelStates.LOGGED : PanelStates.NOT_LOGGED;
     redrawPanel();
 
@@ -140,27 +153,44 @@ SecureChat.Panel = (function () {
       //show username
       var currentUser = SecureChat.Auth.getCurrenUser();
       $("span.user-name").text(currentUser.username);
-      //show logout link
-      $('a#loginLink').text("Logout");
+      $("a#loginLink").text("Logout");
+      $("#currentUser").show().find("span").text(currentUser.username);
+      $("#loginRegisterForms").hide();
+
+      // Clean fields on "Messages" tab
+      $("#receiver").val("");
+      $("span#receiverName").text("");
+      $("#messageList li").remove();
+
+      //show tabs
+      $("a[href='#contacts']").parent().show();
+      $("a[href='#messages']").parent().show();
+
       showContactsTab();
     } else {
       $("span.user-name").text("");
-      //show login link
-      $('a#loginLink').text("Login");
+      $("a#loginLink").text("Login");
+      $("#currentUser").hide();
+      $("#loginRegisterForms").show();
+
+      //hide tabs
+      $("a[href='#contacts']").parent().hide();
+      $("a[href='#messages']").parent().hide();
+
       showLoginTab();
     }
   }
 
   function showLoginTab() {
-    $('#mainTabs a[href="#login"]').tab('show');
+    $("#mainTabs a[href='#login']").tab("show");
   }
 
   function showContactsTab() {
-    $('#mainTabs a[href="#contacts"]').tab('show');
+    $("#mainTabs a[href='#contacts']").tab("show");
   }
 
   function showMessagesTab() {
-    $('#mainTabs a[href="#messages"]').tab('show');
+    $("#mainTabs a[href='#messages']").tab("show");
   }
 
   function loadAndShowContacts() {
@@ -185,7 +215,8 @@ SecureChat.Panel = (function () {
   function showContacts(contacts) {
     $("#contactList li").remove();
     contacts.forEach(function(contact) {
-      $("#contactList").append("<li class='list-group-item' data-username='" + contact.username + "'>" + contact.username +"</li>");
+      //TODO: escape username
+      $("#contactList").append($("<li class='list-group-item' data-username='" + contact.username + "'></li>").text(contact.username));
     });
   }
 
@@ -197,7 +228,7 @@ SecureChat.Panel = (function () {
       if (message.isOwn) {
         style = "background-color:#adadad;"
       }
-      $("#messageList").append("<li class='list-group-item' style='" + style + "'>" + message.messageText +"</li>");
+      $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(message.messageText));
     });
   }
 

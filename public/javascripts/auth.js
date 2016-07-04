@@ -23,6 +23,7 @@ SecureChat.Auth = (function () {
       if (data.success) {
         SecureChat.LocalStorage.save(tokenKey, data.token);
         SecureChat.LocalStorage.save(userKey, JSON.stringify(data.user));
+        currentUser = data.user;
       }
       callback(data);
     });
