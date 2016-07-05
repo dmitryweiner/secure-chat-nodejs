@@ -161,6 +161,7 @@ SecureChat.Panel = (function () {
       $("#receiver").val("");
       $("span#receiverName").text("");
       $("#messageList li").remove();
+      $("#addMessage").val("");
 
       //show tabs
       $("a[href='#contacts']").parent().show();
