@@ -6,8 +6,17 @@ var User   = require('../../models/user');
 var Message   = require('../../models/message');
 
 router.get('/:receiver', function(req, res) {
-  console.log("req.query.receiver", req.params.receiver);
   User.findOne({"username": req.params.receiver}, function(err, receiver) {
+    if (err) {
+      console.log("error", err.message);
+      res.json({
+        success: false,
+        message: err.message,
+        messages: []
+      });
+      return;
+    }
+
     if (!receiver) {
       res.json({
         success: false,
@@ -16,42 +25,36 @@ router.get('/:receiver', function(req, res) {
       });
       return;
     }
-    Message.find({
-        $and: [
-          { $or: [
-            {"sender":  mongoose.Types.ObjectId(req.authUser._id)},
-            {"receiver": mongoose.Types.ObjectId(req.authUser._id)}] },
-          { $or: [
-            {"sender":  mongoose.Types.ObjectId(receiver._id)},
-            {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
-        ]
-      },
-      null,
-      {sort: {"dateCreated": -1}})
-      .limit(20).exec(
-      function(err, messages) {
-        var filteredMessages = messages.map(function(message) {
-          return {
-            messageText: message.messageText,
-            isOwn: message.sender == req.authUser._id
-          };
-        });
+
+    getMessages(req.authUser, receiver, function(messages) {
+      if (messages === null) {
         res.json({
-          success: true,
-          messages: filteredMessages
+          success: false,
+          messages: []
         });
+        return;
+      }
+      res.json({
+        success: true,
+        messages: messages
       });
+    });
   });
 });
 
 
 router.post('/add', function(req, res) {
-  Promise.all([
-    User.findOne({username: req.body.receiver}),
-    User.findOne({username: req.authUser.username})
-  ]).then(function(results) {
-    var receiver = results[0];
-    var currentUser = results[1];
+  User.findOne({username: req.body.receiver}, function(err, receiver) {
+    if (err) {
+      console.log("error", err.message);
+      res.json({
+        success: false,
+        message: err.message,
+        messages: []
+      });
+      return;
+    }
+
     if (!receiver) {
       res.json({
         success: false,
@@ -63,7 +66,7 @@ router.post('/add', function(req, res) {
 
     var newMessage = new Message({
       messageText: req.body.messageText,
-      sender: mongoose.Types.ObjectId(currentUser._id),
+      sender: mongoose.Types.ObjectId(req.authUser._id),
       receiver: mongoose.Types.ObjectId(receiver._id)
     });
 
@@ -78,43 +81,52 @@ router.post('/add', function(req, res) {
         return;
       }
 
-      Message.find({
-          $and: [
-            { $or: [
-              {"sender":  mongoose.Types.ObjectId(currentUser._id)},
-              {"receiver": mongoose.Types.ObjectId(currentUser._id)}] },
-            { $or: [
-              {"sender":  mongoose.Types.ObjectId(receiver._id)},
-              {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
-          ]},
-        null,
-        {sort: {"dateCreated": -1}})
-        .limit(20).exec(
-        function(err, messages) {
-          if (err) {
-            res.json({
-              success: false,
-              message: err.message,
-              messages: []
-            });
-            return;
-          }
-          var filteredMessages = messages.map(function(message) {
-            return {
-              messageText: message.messageText,
-              isOwn: message.sender == req.authUser._id
-            };
-          });
+      getMessages(req.authUser, receiver, function(messages) {
+        if (messages === null) {
           res.json({
-            success: true,
-            messages: filteredMessages
+            success: false,
+            messages: []
           });
+          return;
+        }
+        res.json({
+          success: true,
+          messages: messages
         });
+      });
     });
-
-
   });
 
 });
+
+function getMessages(sender, receiver, callback) {
+  Message.find({
+      $and: [
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(sender._id)},
+          {"receiver": mongoose.Types.ObjectId(sender._id)}] },
+        { $or: [
+          {"sender":  mongoose.Types.ObjectId(receiver._id)},
+          {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
+      ]
+    },
+    null,
+    {sort: {"dateCreated": -1}}
+  ).limit(20).exec(
+    function(err, messages) {
+      if (err) {
+        console.log("error", err.message);
+        callback(null);
+      }
+      var filteredMessages = messages.map(function(message) {
+        return {
+          messageText: message.messageText,
+          isOwn: String(message.sender) === String(sender._id)
+        };
+      });
+      callback(filteredMessages);
+  });
+}
+
 
 module.exports = router;
