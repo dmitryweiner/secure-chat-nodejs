@@ -193,7 +193,7 @@ SecureChat.Panel = (function () {
   }
 
   function showLoginTab() {
-    $("#mainTabs a[href='#login']").tab("show");
+    $("#mainTabs a[href='#profile']").tab("show");
   }
 
   function showContactsTab() {

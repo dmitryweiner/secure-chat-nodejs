@@ -4,15 +4,15 @@ block content
   div
     ul#mainTabs(class="nav nav-tabs" role="tablist")
       li(role="presentation" class="active")
-        a(href="#login" aria-controls="login" role="tab" data-toggle="tab") Profile
+        a(href="#profile" aria-controls="profile" role="tab" data-toggle="tab") Profile
       li(role="presentation")
         a(href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab") Contacts
       li(role="presentation")
         a(href="#messages" aria-controls="messages" role="tab" data-toggle="tab") Messages
 
     .tab-content(style="padding-top:10px;")
-      div(role="tabpanel" class="tab-pane active" id="login")
-        include login
+      div(role="tabpanel" class="tab-pane active" id="profile")
+        include profile
 
       div(role="tabpanel" class="tab-pane" id="contacts")
         include contacts

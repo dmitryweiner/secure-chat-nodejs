@@ -1,5 +1,15 @@
-#currentUser(style="display: none;") You are currently logged as:&nbsp;
-  strong
+#currentUser(style="display: none;")
+  .profile You are currently logged as:&nbsp;
+    strong
+  .private-key
+    form
+      .form-group
+        label(for="username" class="control-label") Private RSA key
+        input(id="privateKey" type="text" placeholder="Username" class="form-control")
+      .form-group
+        button(type="submit" class="btn btn-default pull-right") Login!
+
+
 
 #loginRegisterForms(class="col-sm-5")
     div(id="loginForm")
