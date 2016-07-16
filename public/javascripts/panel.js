@@ -37,6 +37,7 @@ SecureChat.Panel = (function () {
           }, 1000);
           $username.val("");
           $password.val("");
+          $passwordReenter.val("");
         } else {
           showAlert($alert, "warning", data.message);
         }
