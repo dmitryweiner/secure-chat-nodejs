@@ -1,41 +1,53 @@
 #currentUser(style="display: none;") You are currently logged as:&nbsp;
   span
 
-#loginRegisterForms(style="max-width:400px")
-  ul(class="nav nav-tabs" role="tablist")
-    li(role="presentation" class="active")
-      a(href="#loginForm" aria-controls="loginForm" role="tab" data-toggle="tab") Login
-    li(role="presentation")
-      a(href="#registerForm" aria-controls="registerForm" role="tab" data-toggle="tab") Register
-
-  .tab-content(style="padding-top:10px;")
-    div(role="tabpanel" class="tab-pane active" id="loginForm")
+#loginRegisterForms(class="col-sm-5")
+    div(id="loginForm")
+      h4.text-center Login
 
       div(class="alert fade in hidden" role="alert")
         span.alert-text
 
-      form
+      form.form-horizontal
         .form-group
-          label(for="username") Username
-          input.form-control(type="text" id="username" placeholder="Username")
+          label(for="username" class="col-sm-2 control-label") Username
+          .col-sm-10
+            input(id="username" type="text" placeholder="Username" class="form-control")
         .form-group
-          label(for="password") Password
-          input.form-control(type="password" id="password")
-        button(type="submit" class="btn btn-default") Login!
+          label(for="password" class="col-sm-2 control-label") Password
+          .col-sm-10
+            input.form-control(type="password" id="password")
+        .form-group
+          .col-sm-10.col-sm-offset-2
+            button(type="submit" class="btn btn-default pull-right") Login!
+        .form-group
+          .col-sm-10
+            span If you haven't registered yet,&nbsp;
+              a#registerSwitch register!
 
-    div(role="tabpanel" class="tab-pane" id="registerForm")
+    div(class="hidden" id="registerForm")
+      h4.text-center Registration
 
       div(class="alert fade in hidden" role="alert")
         span.alert-text
 
-      form
+      form.form-horizontal
         .form-group
-          label(for="registerFormUsername") Username
-          input.form-control(type="text" id="registerFormUsername" placeholder="Username")
+          label(for="registerFormUsername" class="col-sm-2 control-label") Username
+          .col-sm-10
+            input.form-control(type="text" id="registerFormUsername" placeholder="Username")
         .form-group
-          label(for="registerFormPassword") Password
-          input.form-control(type="password" id="registerFormPassword")
+          label(for="registerFormPassword" class="col-sm-2 control-label") Password
+          .col-sm-10
+            input.form-control(type="password" id="registerFormPassword")
         .form-group
-          label(for="registerFormPasswordReenter") Reenter password
-          input.form-control(type="password" id="registerFormPasswordReenter")
-        button(type="submit" class="btn btn-default") Register!
+          label(for="registerFormPasswordReenter" class="col-sm-2 control-label") Reenter password
+          .col-sm-10
+            input.form-control(type="password" id="registerFormPasswordReenter")
+        .form-group
+          .col-sm-10.col-sm-offset-2
+            button(type="submit" class="btn btn-default pull-right") Register!
+        .form-group
+          .col-sm-10
+            span If you have already registered,&nbsp;
+              a#loginSwitch login!
