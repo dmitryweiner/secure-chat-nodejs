@@ -162,9 +162,9 @@ SecureChat.Panel = (function () {
     if (panelState == PanelStates.LOGGED) {
       //show username
       var currentUser = SecureChat.Auth.getCurrenUser();
-      $("span.user-name").text(currentUser.username);
+      $("strong.user-name").text(currentUser.username);
       $("a#loginLink").text("Logout");
-      $("#currentUser").show().find("span").text(currentUser.username);
+      $("#currentUser").show().find("strong").text(currentUser.username);
       $("#loginRegisterForms").hide();
 
       // Clean fields on "Messages" tab
@@ -179,7 +179,7 @@ SecureChat.Panel = (function () {
 
       showContactsTab();
     } else {
-      $("span.user-name").text("");
+      $("strong.user-name").text("");
       $("a#loginLink").text("Login");
       $("#currentUser").hide();
       $("#loginRegisterForms").show();
@@ -206,6 +206,10 @@ SecureChat.Panel = (function () {
 
   function loadAndShowContacts() {
     SecureChat.API.getContacts(function(data) {
+      if (data === null) {
+        doLogout();
+        return;
+      }
       showContacts(data.contacts);
     });
   }
@@ -216,6 +220,10 @@ SecureChat.Panel = (function () {
       return;
     }
     SecureChat.API.getMessages(receiver, function(data) {
+      if (data === null) {
+        doLogout();
+        return;
+      }
       showMessages(data.messages);
       if (isShowingMessages) {
         setTimeout(loadAndShowMessages, 2000);
@@ -241,6 +249,13 @@ SecureChat.Panel = (function () {
       }
       $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(message.messageText));
     });
+  }
+
+  function doLogout() {
+    panelState = PanelStates.NOT_LOGGED;
+    SecureChat.Auth.doLogout();
+    showLoginTab();
+    redrawPanel();
   }
 
   return {
