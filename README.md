@@ -2,12 +2,15 @@
 Secure chat with RSA (hopefully)
 
 ##Technologies used:
-* Backend:
-  * Node.js + Express.js
-  * Mongodb (Mongoose.js)
-* Frontend:
-  * Jade
-  * JQuery
+### Backend:
+* Node.js + Express.js
+* Mongodb (Mongoose.js)
+
+### Frontend:
+* Bootstrap CSS
+* Jade
+* JQuery
+* [jsencrypt](https://github.com/travist/jsencrypt)
 
 ##Todo:
 * Login/register form design
@@ -28,6 +31,3 @@ npm start
 ```
 Then go to:
 http://127.0.0.1:3000/
-
-
-

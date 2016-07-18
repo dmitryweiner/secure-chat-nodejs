@@ -107,19 +107,29 @@ SecureChat.Panel = (function () {
       });
       return false;
     });
+    
+    $("#privateKeyForm").on("submit", function() {
+      var $alert = $(".private-key .alert");
+      SecureChat.RSA.saveOwnPrivateKey($("#privateKey").val());
+      $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("Successfully saved");
+      setTimeout(function() {
+        $alert.addClass("hidden");
+      }, 1000);
+      return false;
+    });
 
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $("a[data-toggle='tab']").on("shown.bs.tab", function (e) {
       isShowingMessages = false;
-      if ('#contacts' === $(e.target).attr('href')) {
+      if ("#contacts" === $(e.target).attr("href")) {
         loadAndShowContacts();
       }
-      if ('#messages' === $(e.target).attr('href')) {
+      if ("#messages" === $(e.target).attr("href")) {
         loadAndShowMessages();
         isShowingMessages = true;
       }
     });
 
-    $('a#loginLink').on('click', function () {
+    $("a#loginLink").on("click", function () {
       if (panelState == PanelStates.LOGGED) {
         SecureChat.Auth.doLogout();
         panelState = PanelStates.NOT_LOGGED;
@@ -129,17 +139,17 @@ SecureChat.Panel = (function () {
       redrawPanel();
     });
 
-    $('a#registerSwitch').on('click', function () {
-      $('#registerForm').removeClass('hidden');
-      $('#loginForm').addClass('hidden');
+    $("a#registerSwitch").on("click", function () {
+      $("#registerForm").removeClass("hidden");
+      $("#loginForm").addClass("hidden");
     });
 
-    $('a#loginSwitch').on('click', function () {
-      $('#loginForm').removeClass('hidden');
-      $('#registerForm').addClass('hidden');
+    $("a#loginSwitch").on("click", function () {
+      $("#loginForm").removeClass("hidden");
+      $("#registerForm").addClass("hidden");
     });
 
-    $(document.body).on('click', '#contactList li', function() {
+    $(document.body).on("click", "#contactList li", function() {
       var username = $(this).data("username");
       $("#receiver").val(username);
       $("span#receiverName").text(username);
@@ -206,7 +216,7 @@ SecureChat.Panel = (function () {
 
   function loadAndShowContacts() {
     SecureChat.API.getContacts(function(data) {
-      if (data === null) {
+      if (data === null || !data.success) {
         doLogout();
         return;
       }
@@ -220,7 +230,7 @@ SecureChat.Panel = (function () {
       return;
     }
     SecureChat.API.getMessages(receiver, function(data) {
-      if (data === null) {
+      if (data === null || !data.success) {
         doLogout();
         return;
       }

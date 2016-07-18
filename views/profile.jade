@@ -1,13 +1,16 @@
 #currentUser(style="display: none;")
   .profile You are currently logged as:&nbsp;
     strong
-  .private-key
-    form
+  .private-key(style="margin-top:20px")
+    div(class="alert fade in hidden" role="alert")
+      span.alert-text
+
+    form#privateKeyForm
       .form-group
-        label(for="username" class="control-label") Private RSA key
-        input(id="privateKey" type="text" placeholder="Username" class="form-control")
+        label(for="privateKey" class="control-label") Private RSA key:
+        textarea(id="privateKey" placeholder="Private key" class="form-control" rows="5" style="width: 100%")
       .form-group
-        button(type="submit" class="btn btn-default pull-right") Login!
+        button(type="submit" class="btn btn-default") Save
 
 
 
