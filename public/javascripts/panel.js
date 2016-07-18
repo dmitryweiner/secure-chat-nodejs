@@ -18,27 +18,28 @@ SecureChat.Panel = (function () {
       var $password = $("#registerFormPassword");
       var $passwordReenter = $("#registerFormPasswordReenter");
       var $alert = $("#registerForm .alert");
-      $alert.addClass("hidden").find("span.alert-text").text("");
+      hideAlert($alert);
       if (!$username.val() || !$password.val() || !$passwordReenter.val()) {
-        $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text("All fields are required");
+        showAlert($alert, "warning", "All fields are required");
         return false;
       }
       if ($password.val() !== $passwordReenter.val()) {
-        $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text("Passwords should be equal");
+        showAlert($alert, "warning", "Passwords should be equal");
         return false;
       }
 
       SecureChat.API.register($username.val(), $password.val(), function(data) {
         if(data.success) {
-          $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully created");
+          showAlert($alert, "success", "User successfully created");
           setTimeout(function() {
-            $alert.addClass("hidden");
+            hideAlert($alert);
             showLoginTab();
           }, 1000);
           $username.val("");
           $password.val("");
+          $passwordReenter.val("");
         } else {
-          $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
+          showAlert($alert, "warning", data.message);
         }
       });
       return false;
@@ -48,23 +49,23 @@ SecureChat.Panel = (function () {
       var $username = $("#username");
       var $password = $("#password");
       var $alert = $("#loginForm .alert");
-      $alert.addClass("hidden").find("span.alert-text").text("");
+      hideAlert($alert);
       if (!$username.val() || !$password.val()) {
-        $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text("All fields are required");
+        showAlert($alert, "warning", "All fields are required");
         return false;
       }
       SecureChat.Auth.doAuthenticate($username.val(), $password.val(), function(data) {
         if(data.success) {
-          $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("User successfully authenticated");
+          showAlert($alert, "success", "User successfully authenticated");
           setTimeout(function() {
-            $alert.addClass("hidden");
+            hideAlert($alert);
             redrawPanel();
           }, 1000);
           $username.val("");
           $password.val("");
           panelState = PanelStates.LOGGED;
         } else {
-          $alert.removeClass("hidden").addClass("alert-warning").find("span.alert-text").text(data.message);
+          showAlert($alert, "warning", data.message);
         }
       });
       return false;
@@ -73,9 +74,9 @@ SecureChat.Panel = (function () {
     $("#addContactForm").on("submit", function() {
       var $contact = $("#addUsername");
       var $alert = $("#contacts .alert");
-      $alert.addClass("hidden").find("span.alert-text").text("");
+      hideAlert($alert);
       if (!$contact.val()) {
-        $alert.removeClass("hidden").find("span.alert-text").text("Enter contact to add");
+        showAlert($alert, "warning", "Enter contact to add");
         return false;
       }
       SecureChat.API.addContact($contact.val(), function(data) {
@@ -83,7 +84,7 @@ SecureChat.Panel = (function () {
           $contact.val("");
           showContacts(data.contacts);
         } else {
-          $alert.removeClass("hidden").find("span.alert-text").text(data.message);
+          showAlert($alert, "warning", data.message);
         }
       });
       return false;
@@ -93,7 +94,7 @@ SecureChat.Panel = (function () {
       var $receiver = $("#receiver");
       var $message = $("#addMessage");
       var $alert = $("#messages .alert");
-      $alert.addClass("hidden").find("span.alert-text").text("");
+      hideAlert($alert);
       if (!$message.val()) {
         return false;
       }
@@ -102,7 +103,7 @@ SecureChat.Panel = (function () {
           $message.val("");
           showMessages(data.messages);
         } else {
-          $alert.removeClass("hidden").find("span.alert-text").text(data.message);
+          showAlert($alert, "warning", data.message);
         }
       });
       return false;
@@ -266,6 +267,32 @@ SecureChat.Panel = (function () {
     SecureChat.Auth.doLogout();
     showLoginTab();
     redrawPanel();
+  }
+
+  /**
+   * shows message when user
+   * @target: HTMLDivElement  // dom element hosting the message
+   * @type: string            // part of the class, now either 'warning' or 'success'
+   * @message: string         // message to be displayed
+   */
+  function showAlert (target, type, message) {
+    target
+      .attr("class", "alert fade in alert-" + type)
+      .find("span.alert-text")
+      .text(message)
+      ;
+  }
+
+  /**
+   * hide alert and clean the message
+   * @target: HTMLDivElement  // dom element hosting the message
+   */
+  function hideAlert (target) {
+    target
+      .attr("class", "alert fade in hidden")
+      .find("span.alert-text")
+      .text("")
+      ;
   }
 
   return {
