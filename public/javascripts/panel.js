@@ -93,12 +93,21 @@ SecureChat.Panel = (function () {
     $("#addMessageForm").on("submit", function() {
       var $receiver = $("#receiver");
       var $message = $("#addMessage");
+      var $isEncrypted = $("#isEncrypted");
       var $alert = $("#messages .alert");
       hideAlert($alert);
       if (!$message.val()) {
         return false;
       }
-      SecureChat.API.addMessage($receiver.val(), $message.val(), function(data) {
+
+      var message = $message.val().substr(0, 128);
+      var originalMessage = "";
+      if ($isEncrypted.is(":checked")) {
+        originalMessage = SecureChat.RSA.encrypt(message);
+        message = SecureChat.RSA.encrypt(message, $receiver.val());
+      }
+
+      SecureChat.API.addMessage($receiver.val(), message, originalMessage, $isEncrypted.is(":checked"), function(data) {
         if(data.success) {
           $message.val("");
           showMessages(data.messages);
@@ -109,23 +118,42 @@ SecureChat.Panel = (function () {
       return false;
     });
     
-    $("#privateKeyForm").on("submit", function() {
-      var $alert = $(".private-key .alert");
-      SecureChat.RSA.saveOwnPrivateKey($("#privateKey").val());
-      $alert.removeClass("hidden").addClass("alert-success").find("span.alert-text").text("Successfully saved");
+    $("#ownKeysForm").on("submit", function() {
+      var $alert = $(".own-keys .alert");
+      SecureChat.RSA.saveOwnPublicKey($("#ownPublicKey").val());
+      SecureChat.RSA.saveOwnPrivateKey($("#ownPrivateKey").val());
+      showAlert($alert, "success", "Successfully saved");
       setTimeout(function() {
-        $alert.addClass("hidden");
+        hideAlert($alert);
       }, 1000);
+      return false;
+    });
+
+    $("#publicKeyForm").on("submit", function() {
+      var $alert = $(".public-key .alert");
+      var receiver = $("#receiver").val();
+      if (receiver) {
+        SecureChat.RSA.saveContactPublicKey(receiver, $("#publicKey").val());
+        showAlert($alert, "success", "Successfully saved");
+        setTimeout(function() {
+          hideAlert($alert);
+        }, 1000);
+      }
       return false;
     });
 
     $("a[data-toggle='tab']").on("shown.bs.tab", function (e) {
       isShowingMessages = false;
+      if ("#profile" === $(e.target).attr("href")) {
+        $("#ownPrivateKey").val(SecureChat.RSA.getOwnPrivateKey());
+        $("#ownPublicKey").val(SecureChat.RSA.getOwnPublicKey());
+      }
       if ("#contacts" === $(e.target).attr("href")) {
         loadAndShowContacts();
       }
       if ("#messages" === $(e.target).attr("href")) {
         loadAndShowMessages();
+        showPublicKey();
         isShowingMessages = true;
       }
     });
@@ -225,6 +253,14 @@ SecureChat.Panel = (function () {
     });
   }
 
+  function showPublicKey() {
+    var receiver = $("#receiver").val();
+    if (!receiver) {
+      return;
+    }
+    $("#publicKey").val(SecureChat.RSA.getContactPublicKey(receiver));
+  }
+
   function loadAndShowMessages() {
     var receiver = $("#receiver").val();
     if (!receiver) {
@@ -252,13 +288,32 @@ SecureChat.Panel = (function () {
 
   function showMessages(messages) {
     // TODO: here should be more intellectual message adding
+    var receiver = $("#receiver").val();
     $("#messageList li").remove();
     messages.forEach(function(message) {
       var style="";
+      var messageText = "";
+
       if (message.isOwn) {
         style = "background-color:#adadad;"
       }
-      $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(message.messageText));
+      
+      if(message.isEncrypted) {
+        if (message.isOwn) {
+          messageText = SecureChat.RSA.decrypt(message.originalMessageText);
+          style = "background-color:#3399ff;"
+        } else {
+          messageText = SecureChat.RSA.decrypt(message.messageText);
+          style = "background-color:#e6f2ff;"
+        }
+        if (!messageText) {
+          messageText = "DECODING FAILED";
+        }
+      } else {
+        messageText = message.messageText;
+      }
+
+      $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(messageText));
     });
   }
 
