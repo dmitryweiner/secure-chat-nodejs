@@ -25,6 +25,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(config.database); // connect to database
+const mongooseConnection = mongoose.connection;
+
+/** mongose internal error handling */
+mongooseConnection.on(
+  'error',
+  err =>
+  {
+    console.log('mongoose error handler', err);
+  }
+);
+
+
 
 app.use('/', routes);
 
