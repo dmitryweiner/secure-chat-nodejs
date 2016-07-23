@@ -4,10 +4,11 @@ var mongoose = require('mongoose');
 
 var User   = require('../../models/user');
 
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   User.findOne({"username": req.authUser.username}, function(err, user) { // TODO: may be we should search by Object ID
     var contacts;
-    if (user) {
+    if (err) { next(next); }
+    else if (user) {
       User.populate(user, {
         path: 'contacts',
         model: 'User'
@@ -32,7 +33,7 @@ router.get('/', function(req, res) {
   });
 });
 
-router.post('/add', function(req, res) {
+router.post('/add', function(req, res, next) {
   Promise.all([
     User.findOne({username: req.body.userToAdd}),
     User.findOne({username: req.authUser.username})
@@ -64,16 +65,19 @@ router.post('/add', function(req, res) {
         path: 'contacts',
         model: 'User'
       }, function (err, user) {
-        var contacts = user.contacts.map(function(contact) {
-          return {
-            username: contact.username
-          };
-        });
-        res.json({
-          success: true,
-          message: "User saved successfully",
-          contacts: contacts
-        });
+        if (err) { next(next); }
+        else {
+          var contacts = user.contacts.map(function(contact) {
+            return {
+              username: contact.username
+            };
+          });
+          res.json({
+            success: true,
+            message: "User saved successfully",
+            contacts: contacts
+          });
+        }
       });
 
     });

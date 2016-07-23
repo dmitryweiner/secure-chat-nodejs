@@ -11,16 +11,18 @@ var apiContacts = require('./contacts');
 var apiMessages = require('./messages');
 
 
-router.post('/authenticate', function(req, res) {
+router.post('/authenticate', function(req, res, next) {
 
   // find the user
   User.findOne({
     username: req.body.username
   }).lean().exec(function(err, user) {
 
-    if (err) throw err;
-
-    if (!user) {
+    if (err)
+    {
+      next(err);
+    }
+    else if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
 
@@ -53,12 +55,17 @@ router.post('/authenticate', function(req, res) {
   });
 });
 
-router.post('/register', function(req, res) {
+router.post('/register', function(req, res, next) {
+
   //check if username already exists
   User.findOne({
     username: req.body.username
   }, function(err, user) {
-    if (user) {
+    if (err)
+    {
+      next(err);
+    }
+    else if (user) {
       res.json({
         success: false,
         message: "User already exists"
