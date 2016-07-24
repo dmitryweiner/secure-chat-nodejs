@@ -96,7 +96,7 @@ SecureChat.API = (function () {
     });
   }
 
-  function addMessage(receiver, messageText, originalMessageText, isEncrypted, callback) {
+  function addMessage(receiver, messageText, key, keyEncryptedBySender, isEncrypted, callback) {
     var token = SecureChat.Auth.getToken();
     if (!token) {
       callback(null);
@@ -108,7 +108,8 @@ SecureChat.API = (function () {
       data: {
         receiver: receiver,
         messageText: messageText,
-        originalMessageText: originalMessageText,
+        key: key,
+        keyEncryptedBySender: keyEncryptedBySender,
         isEncrypted: isEncrypted
       },
       headers: {

@@ -73,7 +73,7 @@ router.post('/register', function(req, res, next) {
       return;
     }
 
-    var salt = Math.random().toString(36);
+    var salt = Math.random().toString(36).slice(-10);
     var newUser = new User({
       username: req.body.username,
       password: crypto.createHash('md5').update(req.body.password + salt).digest("hex"),

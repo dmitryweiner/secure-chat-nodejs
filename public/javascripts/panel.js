@@ -100,14 +100,17 @@ SecureChat.Panel = (function () {
         return false;
       }
 
-      var message = $message.val().substr(0, 128);
-      var originalMessage = "";
+      var message = $message.val();
+      var key = "";
+      var keyEncryptedBySender = "";
       if ($isEncrypted.is(":checked")) {
-        originalMessage = SecureChat.RSA.encrypt(message);
-        message = SecureChat.RSA.encrypt(message, $receiver.val());
+        var encryptedMessageAndKey = SecureChat.AES.encrypt(message);
+        message = encryptedMessageAndKey[0];
+        key = SecureChat.RSA.encrypt(encryptedMessageAndKey[1], $receiver.val());
+        keyEncryptedBySender = SecureChat.RSA.encrypt(encryptedMessageAndKey[1]);
       }
 
-      SecureChat.API.addMessage($receiver.val(), message, originalMessage, $isEncrypted.is(":checked"), function(data) {
+      SecureChat.API.addMessage($receiver.val(), message, key, keyEncryptedBySender, $isEncrypted.is(":checked"), function(data) {
         if(data.success) {
           $message.val("");
           showMessages(data.messages);
@@ -291,26 +294,27 @@ SecureChat.Panel = (function () {
     var receiver = $("#receiver").val();
     $("#messageList li").remove();
     messages.forEach(function(message) {
-      var style="";
-      var messageText = "";
-
+      var style = "";
+      var messageText;
+      var key = "";
       if (message.isOwn) {
         style = "background-color:#adadad;"
       }
-      
+      messageText = message.messageText;
+
       if(message.isEncrypted) {
         if (message.isOwn) {
-          messageText = SecureChat.RSA.decrypt(message.originalMessageText);
+          key = SecureChat.RSA.decrypt(message.keyEncryptedBySender);
+          messageText = SecureChat.AES.decrypt(message.messageText, key);
           style = "background-color:#3399ff;"
         } else {
-          messageText = SecureChat.RSA.decrypt(message.messageText);
+          key = SecureChat.RSA.decrypt(message.key);
+          messageText = SecureChat.AES.decrypt(message.messageText, key);
           style = "background-color:#e6f2ff;"
         }
         if (!messageText) {
           messageText = "DECODING FAILED";
         }
-      } else {
-        messageText = message.messageText;
       }
 
       $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(messageText));

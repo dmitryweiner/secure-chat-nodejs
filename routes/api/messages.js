@@ -66,8 +66,11 @@ router.post('/add', function(req, res) {
 
     var newMessage = new Message({
       messageText: req.body.messageText,
+      key: req.body.key,
+      keyEncryptedBySender: req.body.keyEncryptedBySender,
       sender: mongoose.Types.ObjectId(req.authUser._id),
-      receiver: mongoose.Types.ObjectId(receiver._id)
+      receiver: mongoose.Types.ObjectId(receiver._id),
+      isEncrypted: req.body.isEncrypted
     });
 
     newMessage.save(function (err) {
@@ -121,7 +124,10 @@ function getMessages(sender, receiver, callback) {
       var filteredMessages = messages.map(function(message) {
         return {
           messageText: message.messageText,
-          isOwn: String(message.sender) === String(sender._id)
+          key: message.key,
+          keyEncryptedBySender: message.keyEncryptedBySender,
+          isOwn: String(message.sender) === String(sender._id),
+          isEncrypted: message.isEncrypted
         };
       });
       callback(filteredMessages);
