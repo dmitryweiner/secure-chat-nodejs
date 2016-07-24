@@ -40,48 +40,57 @@ router.post('/add', function(req, res, next) {
   ]).then(function(results) {
     var userToAdd = results[0];
     var currentUser = results[1];
-    if (!userToAdd) {
-      res.json({
-        success: false,
-        message: "User not found",
-        contacts: []
-      });
-      return;
-    }
-
-    currentUser.contacts.push(userToAdd);
-
-    currentUser.save(function (err) {
-      if (err) {
-        res.json({
-          success: false,
-          message: err.message,
-          contacts: []
+    User.populate(currentUser, {
+      path: 'contacts',
+      model: 'User'
+    }, function (err, user) {
+      if (err) { next(next); }
+      else {
+        var contacts = user.contacts.map(function(contact) {
+          return {
+            username: contact.username
+          };
         });
-        return;
-      }
-
-      User.populate(currentUser, {
-        path: 'contacts',
-        model: 'User'
-      }, function (err, user) {
-        if (err) { next(next); }
-        else {
-          var contacts = user.contacts.map(function(contact) {
-            return {
-              username: contact.username
-            };
+        if (!userToAdd) {
+          res.json({
+            success: false,
+            message: "User not found",
+            contacts: contacts
           });
+          return;
+        }
+
+        if (String(userToAdd._id) === String(currentUser._id)) {
+          res.json({
+            success: false,
+            message: "You can not add yourself to contacts",
+            contacts: contacts
+          });
+          return;
+        }
+
+        currentUser.contacts.push(userToAdd);
+        contacts.push({
+          username: userToAdd.username
+        });
+
+        currentUser.save(function (err) {
+          if (err) {
+            res.json({
+              success: false,
+              message: err.message,
+              contacts: contacts
+            });
+            return;
+          }
           res.json({
             success: true,
             message: "User saved successfully",
             contacts: contacts
           });
-        }
-      });
-
+        });
+      }
     });
-
 
   });
 });

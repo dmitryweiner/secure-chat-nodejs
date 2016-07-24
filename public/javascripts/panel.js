@@ -32,7 +32,6 @@ SecureChat.Panel = (function () {
         if(data.success) {
           showAlert($alert, "success", "User successfully created");
           setTimeout(function() {
-            hideAlert($alert);
             showLoginTab();
           }, 1000);
           $username.val("");
@@ -58,7 +57,6 @@ SecureChat.Panel = (function () {
         if(data.success) {
           showAlert($alert, "success", "User successfully authenticated");
           setTimeout(function() {
-            hideAlert($alert);
             redrawPanel();
           }, 1000);
           $username.val("");
@@ -126,9 +124,6 @@ SecureChat.Panel = (function () {
       SecureChat.RSA.saveOwnPublicKey($("#ownPublicKey").val());
       SecureChat.RSA.saveOwnPrivateKey($("#ownPrivateKey").val());
       showAlert($alert, "success", "Successfully saved");
-      setTimeout(function() {
-        hideAlert($alert);
-      }, 1000);
       return false;
     });
 
@@ -138,9 +133,6 @@ SecureChat.Panel = (function () {
       if (receiver) {
         SecureChat.RSA.saveContactPublicKey(receiver, $("#publicKey").val());
         showAlert($alert, "success", "Successfully saved");
-        setTimeout(function() {
-          hideAlert($alert);
-        }, 1000);
       }
       return false;
     });
@@ -152,6 +144,7 @@ SecureChat.Panel = (function () {
         $("#ownPublicKey").val(SecureChat.RSA.getOwnPublicKey());
       }
       if ("#contacts" === $(e.target).attr("href")) {
+        $("#addUsername").val("");
         loadAndShowContacts();
       }
       if ("#messages" === $(e.target).attr("href")) {
@@ -236,6 +229,8 @@ SecureChat.Panel = (function () {
 
   function showLoginTab() {
     $("#mainTabs a[href='#profile']").tab("show");
+    $("#loginForm").removeClass("hidden");
+    $("#registerForm").addClass("hidden");
   }
 
   function showContactsTab() {
@@ -340,6 +335,9 @@ SecureChat.Panel = (function () {
       .find("span.alert-text")
       .text(message)
       ;
+    setTimeout(function() {
+      hideAlert(target);
+    }, 2000);
   }
 
   /**
