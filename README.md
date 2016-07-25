@@ -1,21 +1,18 @@
 # Secure chat
-Secure chat with RSA (hopefully)
+Secure chat with RSA and AES end to end encryption 
 
 ##Technologies used:
 ### Backend:
-* Node.js + Express.js
-* Mongodb (Mongoose.js)
+* [Node.js 4.4](https://nodejs.org/en/download/)
+* Express.js
+* Mongoose.js (MongoDB)
 
 ### Frontend:
 * Bootstrap CSS
 * Jade
 * JQuery
-* [jsencrypt](https://github.com/travist/jsencrypt)
-
-##Todo:
-* Login/register form design
-* API code refactoring
-* RSA encryption
+* [jsencrypt](https://github.com/travist/jsencrypt) -- RSA encryption/decryption
+* [CryptoJS](https://cdnjs.com/libraries/crypto-js) -- AES encryption/decryption
 
 ## Installation:
 * Install mongodb locally
