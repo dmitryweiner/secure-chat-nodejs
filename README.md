@@ -41,5 +41,6 @@ openssl rsa -pubout -in priv.pem -out pub.pem
 5. Go to "Contacts" tab, enter your friend's username
 6. If it was successfully added, click on nickname in contact-list
 7. You will be moved to "Messages" tab
-8. Enter your friend's public RSA key which was sent to you by alternative ways
-9. You you wish to send your messages securely, check the checkbox ""
+8. Enter your friend's public RSA key which was sent to you by alternative ways 
+9. And send her your public RSA key
+10. You you wish to send your messages securely, check the checkbox ""
