@@ -8,10 +8,7 @@ SecureChat.Auth = (function () {
   var currentUser;
 
   function isLogged() {
-    if (SecureChat.LocalStorage.load(tokenKey)) {
-      return true;
-    }
-    return false;
+    return SecureChat.LocalStorage.load(tokenKey) ? true : false;
   }
 
   function getToken() {

@@ -28,3 +28,18 @@ npm start
 ```
 Then go to:
 http://127.0.0.1:3000/
+
+## How to use
+1. Register new account via registration form
+2. Login to the site
+3. Generate a pair of RSA keys
+```
+openssl genrsa -out priv.pem 1024
+openssl rsa -pubout -in priv.pem -out pub.pem
+```
+4. Enter it in you profile tab
+5. Go to "Contacts" tab, enter your friend's username
+6. If it was successfully added, click on nickname in contact-list
+7. You will be moved to "Messages" tab
+8. Enter your friend's public RSA key which was sent to you by alternative ways
+9. You you wish to send your messages securely, check the checkbox ""
