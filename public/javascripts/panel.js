@@ -290,12 +290,11 @@ SecureChat.Panel = (function () {
     $("#messageList li").remove();
     messages.forEach(function(message) {
       var style = "";
-      var messageText;
+      var messageText = "";
       var key = "";
       if (message.isOwn) {
         style = "background-color:#adadad;"
       }
-      messageText = message.messageText;
 
       if(message.isEncrypted) {
         if (message.isOwn) {
@@ -310,6 +309,8 @@ SecureChat.Panel = (function () {
         if (!messageText) {
           messageText = "DECODING FAILED";
         }
+      } else {
+        messageText = message.messageText;
       }
 
       $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(messageText));
