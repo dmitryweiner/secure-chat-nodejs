@@ -300,11 +300,11 @@ SecureChat.Panel = (function () {
       if(message.isEncrypted) {
         if (message.isOwn) {
           key = SecureChat.RSA.decrypt(message.keyEncryptedBySender);
-          messageText = SecureChat.AES.decrypt(message.messageText, key);
+          if (key) messageText = SecureChat.AES.decrypt(message.messageText, key);
           style = "background-color:#3399ff;"
         } else {
           key = SecureChat.RSA.decrypt(message.key);
-          messageText = SecureChat.AES.decrypt(message.messageText, key);
+          if (key) messageText = SecureChat.AES.decrypt(message.messageText, key);
           style = "background-color:#e6f2ff;"
         }
         if (!messageText) {
