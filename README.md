@@ -43,4 +43,4 @@ openssl rsa -pubout -in priv.pem -out pub.pem
 7. You will be moved to "Messages" tab
 8. Enter your friend's public RSA key which was sent to you by alternative ways 
 9. And send her your public RSA key
-10. You you wish to send your messages securely, check the checkbox ""
+10. If you wish to send your messages securely, check the checkbox "Encrypted" (You should set up keys first)
