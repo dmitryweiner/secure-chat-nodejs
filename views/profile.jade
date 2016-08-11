@@ -15,8 +15,8 @@
       .form-group
         button(type="submit" class="btn btn-default") Save
 
-#loginRegisterForms(class="col-sm-5")
-    div(id="loginForm")
+#loginRegisterForms(class="col-md-12")
+    div(id="loginForm").col-md-6.col-xs-12
       h4.text-center Login
 
       div(class="alert fade in hidden" role="alert")
@@ -34,12 +34,8 @@
         .form-group
           .col-sm-10.col-sm-offset-2
             button(type="submit" class="btn btn-default pull-right") Login!
-        .form-group
-          .col-sm-10
-            span If you haven't registered yet,&nbsp;
-              a#registerSwitch register!
 
-    div(class="hidden" id="registerForm")
+    div(id="registerForm").col-md-6.col-xs-12
       h4.text-center Registration
 
       div(class="alert fade in hidden" role="alert")
@@ -61,7 +57,3 @@
         .form-group
           .col-sm-10.col-sm-offset-2
             button(type="submit" class="btn btn-default pull-right") Register!
-        .form-group
-          .col-sm-10
-            span If you have already registered,&nbsp;
-              a#loginSwitch login!

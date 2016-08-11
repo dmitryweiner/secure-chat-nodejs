@@ -1,10 +1,10 @@
-div(style="max-width:400px")
+div.col-md-6.col-xs-12
   div(class="alert alert-warning fade in hidden" role="alert")
     span.alert-text
 
   form.form-inline(id="addContactForm")
     .form-group
-      input#addUsername(type="text" class="form-control" placeholder="Enter username to add" style="margin-right:10px")
+      input#addUsername(type="text" class="form-control" placeholder="Enter username of your friend to add" style="margin-right:10px")
     button(type="submit" class="btn btn-default") Add
 
-  ul.list-group(id="contactList" style="margin-top:10px")
+  ul.list-group.clickable(id="contactList" style="margin-top:10px")

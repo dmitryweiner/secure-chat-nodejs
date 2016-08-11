@@ -164,16 +164,6 @@ SecureChat.Panel = (function () {
       redrawPanel();
     });
 
-    $("a#registerSwitch").on("click", function () {
-      $("#registerForm").removeClass("hidden");
-      $("#loginForm").addClass("hidden");
-    });
-
-    $("a#loginSwitch").on("click", function () {
-      $("#loginForm").removeClass("hidden");
-      $("#registerForm").addClass("hidden");
-    });
-
     $(document.body).on("click", "#contactList li", function() {
       var username = $(this).data("username");
       $("#receiver").val(username);
@@ -230,7 +220,7 @@ SecureChat.Panel = (function () {
   function showLoginTab() {
     $("#mainTabs a[href='#profile']").tab("show");
     $("#loginForm").removeClass("hidden");
-    $("#registerForm").addClass("hidden");
+    $("#registerForm").removeClass("hidden");
   }
 
   function showContactsTab() {
