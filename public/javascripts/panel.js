@@ -162,6 +162,7 @@ SecureChat.Panel = (function () {
       if ("#messages" === $(e.target).attr("href")) {
         $("#messageList li").remove();
         isShowingMessages = true;
+        loadedMessages = [];
         loadAndShowMessages();
         showPublicKey();
       }
