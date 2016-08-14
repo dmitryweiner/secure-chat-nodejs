@@ -154,7 +154,7 @@ SecureChat.Panel = (function () {
       }
     });
 
-    $("a#loginLink").on("click", function () {
+    $("a.login-link").on("click", function () {
       if (panelState == PanelStates.LOGGED) {
         SecureChat.Auth.doLogout();
         panelState = PanelStates.NOT_LOGGED;
@@ -188,7 +188,7 @@ SecureChat.Panel = (function () {
       //show username
       var currentUser = SecureChat.Auth.getCurrenUser();
       $("strong.user-name").text(currentUser.username);
-      $("a#loginLink").text("Logout");
+      $("a.login-link").text("logout");
       $("#currentUser").show().find("strong").text(currentUser.username);
       $("#loginRegisterForms").hide();
 
@@ -205,7 +205,7 @@ SecureChat.Panel = (function () {
       showContactsTab();
     } else {
       $("strong.user-name").text("");
-      $("a#loginLink").text("Login");
+      $("a.login-link").text("login");
       $("#currentUser").hide();
       $("#loginRegisterForms").show();
 

@@ -1,5 +1,17 @@
 .row
-  .col-md-6.col-xs-12
+  .col-md-6.col-md-push-6.col-xs-12.public-key
+    div(class="alert fade in hidden" role="alert")
+      span.alert-text
+
+    form#publicKeyForm.collapse
+      .form-group
+        label(for="publicKey" class="control-label") Public RSA key:
+        textarea(id="publicKey" placeholder="Public key" class="form-control" rows="5" style="width: 100%")
+      .form-group
+        button(type="submit" class="btn btn-default") Save
+    button(href="#publicKeyForm" data-toggle="collapse") Set public RSA key
+
+  .col-md-6.col-md-pull-6.col-xs-12
     div(class="alert alert-warning fade in hidden" role="alert")
       span.alert-text
 
@@ -16,14 +28,3 @@
           | Encrypted
 
     ul.list-group(id="messageList" style="margin-top:10px")
-
-  .col-md-6.col-xs-12.public-key
-    div(class="alert fade in hidden" role="alert")
-      span.alert-text
-
-    form#publicKeyForm
-      .form-group
-        label(for="publicKey" class="control-label") Public RSA key:
-        textarea(id="publicKey" placeholder="Public key" class="form-control" rows="5" style="width: 100%")
-      .form-group
-        button(type="submit" class="btn btn-default") Save

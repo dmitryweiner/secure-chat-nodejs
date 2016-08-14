@@ -16,15 +16,16 @@ html
     script(type='text/javascript', src='/javascripts/rsa.js')
     script(type='text/javascript', src='/javascripts/aes.js')
     script(type='text/javascript', src='/javascripts/main.js')
+    meta(name="viewport" content="width=device-width, initial-scale=1")
   body
     .container
       nav(class="navbar navbar-full navbar-light" style="background-color: #e3f2fd;")
         h7(class="navbar-brand") Secure chat
         ul(class="nav navbar-nav navbar-right")
           li
-            p.navbar-text(style="margin-right:30px")
+            p.navbar-text.username-block(style="margin-right:30px")
               strong.user-name(style="margin-right:10px")
-              a(id="loginLink") Login
+              a.login-link Login
       .row
         .col-xs-12.col-md-12
           block content
