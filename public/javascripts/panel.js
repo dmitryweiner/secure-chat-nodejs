@@ -10,6 +10,8 @@ SecureChat.Panel = (function () {
   var panelState = null;
 
   var isShowingMessages = false;
+  var messagesTimeoutId;
+  var loadedMessages = [];
 
   function init() {
 
@@ -94,6 +96,12 @@ SecureChat.Panel = (function () {
       var $isEncrypted = $("#isEncrypted");
       var $alert = $("#messages .alert");
       hideAlert($alert);
+
+      if (!$receiver.val()) {
+        showAlert($alert, "warning", "Please choose your friend in contact list!");
+        return false;
+      }
+
       if (!$message.val()) {
         return false;
       }
@@ -139,6 +147,10 @@ SecureChat.Panel = (function () {
 
     $("a[data-toggle='tab']").on("shown.bs.tab", function (e) {
       isShowingMessages = false;
+      if (messagesTimeoutId) {
+        clearTimeout(messagesTimeoutId);
+        messagesTimeoutId = null;
+      }
       if ("#profile" === $(e.target).attr("href")) {
         $("#ownPrivateKey").val(SecureChat.RSA.getOwnPrivateKey());
         $("#ownPublicKey").val(SecureChat.RSA.getOwnPublicKey());
@@ -148,9 +160,10 @@ SecureChat.Panel = (function () {
         loadAndShowContacts();
       }
       if ("#messages" === $(e.target).attr("href")) {
+        $("#messageList li").remove();
+        isShowingMessages = true;
         loadAndShowMessages();
         showPublicKey();
-        isShowingMessages = true;
       }
     });
 
@@ -249,19 +262,30 @@ SecureChat.Panel = (function () {
     $("#publicKey").val(SecureChat.RSA.getContactPublicKey(receiver));
   }
 
+  function getNewestMessageDate () {
+    var newestMessageDate = null;
+    loadedMessages.map(function(message) {
+      var creationDate = new Date(message.dateCreated);
+      if (creationDate > newestMessageDate) {
+        newestMessageDate = creationDate;
+      }
+    });
+    return newestMessageDate;
+  }
+
   function loadAndShowMessages() {
     var receiver = $("#receiver").val();
     if (!receiver) {
       return;
     }
-    SecureChat.API.getMessages(receiver, function(data) {
+    SecureChat.API.getMessages(receiver, getNewestMessageDate(), function(data) {
       if (data === null || !data.success) {
         doLogout();
         return;
       }
       showMessages(data.messages);
       if (isShowingMessages) {
-        setTimeout(loadAndShowMessages, 2000);
+        messagesTimeoutId = setTimeout(loadAndShowMessages, 2000);
       }
     });
   }
@@ -275,13 +299,18 @@ SecureChat.Panel = (function () {
   }
 
   function showMessages(messages) {
-    // TODO: here should be more intellectual message adding
     var receiver = $("#receiver").val();
-    $("#messageList li").remove();
+    var newestMessageDate = getNewestMessageDate();
     messages.forEach(function(message) {
+      var dateCreated = new Date(message.dateCreated);
       var style = "";
       var messageText = "";
       var key = "";
+
+      if (dateCreated <= newestMessageDate) {
+        return true;
+      }
+
       if (message.isOwn) {
         style = "background-color:#adadad;"
       }
@@ -302,8 +331,8 @@ SecureChat.Panel = (function () {
       } else {
         messageText = message.messageText;
       }
-
-      $("#messageList").append($("<li class='list-group-item' style='" + style + "'></li>").text(messageText));
+      $("#messageList").prepend($("<li class='list-group-item' style='" + style + "'></li>").text(messageText));
+      loadedMessages.push(message);
     });
   }
 

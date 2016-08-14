@@ -35,7 +35,7 @@ router.post('/authenticate', function(req, res, next) {
         // if user is found and password is right
         // create a token
         var token = jwt.sign(user, config.secret, {
-          expiresIn: 1440 // expires in 24 hours
+          expiresIn: 1440 * 1000 // expires in 24 hours
         });
 
         // return the information including token as JSON
@@ -109,6 +109,7 @@ router.use(function(req, res, next) {
     // verifies secret and checks exp
     jwt.verify(token, config.secret, function(err, decoded) {
       if (err) {
+        console.log('jwt error', err.message);
         return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes

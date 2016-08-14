@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var User   = require('../../models/user');
 var Message   = require('../../models/message');
 
-router.get('/:receiver', function(req, res) {
+router.get('/:receiver/:newest?', function(req, res) {
   User.findOne({"username": req.params.receiver}, function(err, receiver) {
     if (err) {
       console.log("error", err.message);
@@ -26,7 +26,12 @@ router.get('/:receiver', function(req, res) {
       return;
     }
 
-    getMessages(req.authUser, receiver, function(messages) {
+    var newest = null;
+    if (typeof req.params.newest !== 'undefined') {
+      newest = new Date(req.params.newest);
+    }
+
+    getMessages(req.authUser, receiver, newest, function(messages) {
       if (messages === null) {
         res.json({
           success: false,
@@ -84,7 +89,7 @@ router.post('/add', function(req, res) {
         return;
       }
 
-      getMessages(req.authUser, receiver, function(messages) {
+      getMessages(req.authUser, receiver, null, function(messages) {
         if (messages === null) {
           res.json({
             success: false,
@@ -102,19 +107,31 @@ router.post('/add', function(req, res) {
 
 });
 
-function getMessages(sender, receiver, callback) {
-  Message.find({
-      $and: [
-        { $or: [
-          {"sender":  mongoose.Types.ObjectId(sender._id)},
-          {"receiver": mongoose.Types.ObjectId(sender._id)}] },
-        { $or: [
-          {"sender":  mongoose.Types.ObjectId(receiver._id)},
-          {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
-      ]
-    },
+function getMessages(sender, receiver, newest, callback) {
+  var request = newest ? {
+    $and: [
+      { $or: [
+        {"sender":  mongoose.Types.ObjectId(sender._id)},
+        {"receiver": mongoose.Types.ObjectId(sender._id)}] },
+      { $or: [
+        {"sender":  mongoose.Types.ObjectId(receiver._id)},
+        {"receiver": mongoose.Types.ObjectId(receiver._id)}] },
+      { dateCreated: { $gt: newest } }
+    ]
+  } : {
+    $and: [
+      { $or: [
+        {"sender":  mongoose.Types.ObjectId(sender._id)},
+        {"receiver": mongoose.Types.ObjectId(sender._id)}] },
+      { $or: [
+        {"sender":  mongoose.Types.ObjectId(receiver._id)},
+        {"receiver": mongoose.Types.ObjectId(receiver._id)}] }
+    ]
+  };
+
+  Message.find(request,
     null,
-    {sort: {"dateCreated": -1}}
+    {sort: {"dateCreated": 1}}
   ).limit(20).exec(
     function(err, messages) {
       if (err) {
@@ -124,6 +141,7 @@ function getMessages(sender, receiver, callback) {
       var filteredMessages = messages.map(function(message) {
         return {
           messageText: message.messageText,
+          dateCreated: message.dateCreated,
           key: message.key,
           keyEncryptedBySender: message.keyEncryptedBySender,
           isOwn: String(message.sender) === String(sender._id),

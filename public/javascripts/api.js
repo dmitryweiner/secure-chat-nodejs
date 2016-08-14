@@ -75,14 +75,19 @@ SecureChat.API = (function () {
     });
   }
 
-  function getMessages(receiver, callback) {
+  function getMessages(receiver, newest, callback) {
     var token = SecureChat.Auth.getToken();
     if (!token) {
       callback(null);
     }
 
     $.ajax({
-      url: apiUrl + "/messages/" + encodeURIComponent(receiver),
+      url: apiUrl +
+           "/messages/" +
+           encodeURIComponent(receiver) +
+           "/" +
+           (newest ? newest.toJSON() : "") +
+           "?currentTime=" + new Date().getTime(),
       method: "GET",
       headers: {
         'x-access-token': token
