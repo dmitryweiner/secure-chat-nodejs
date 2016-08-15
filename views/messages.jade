@@ -18,13 +18,14 @@
     form(id="addMessageForm")
       input#receiver(type="hidden" name="receiver")
       fieldset.form-group
-        label(for="addMessage") Message to:&nbsp;
-          span#receiverName
         textarea#addMessage(class="form-control" rows="5" style="width: 100%")
-      fieldset.form-group
-        button(type="submit" class="btn btn-default") Send
-        label.pull-right
-          input#isEncrypted(type="checkbox" value="")
-          | Encrypted
+      fieldset.form-group.row
+        .col-md-2
+          button(type="submit" class="btn btn-default") Send
+        .col-md-1.spinner-holder
+        .col-md-9
+          label.pull-right
+            input#isEncrypted(type="checkbox" value="")
+            | Encrypted
 
     ul.list-group(id="messageList" style="margin-top:10px")

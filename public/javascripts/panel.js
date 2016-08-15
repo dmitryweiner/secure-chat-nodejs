@@ -30,7 +30,9 @@ SecureChat.Panel = (function () {
         return false;
       }
 
+      showSpinner($(this));
       SecureChat.API.register($username.val(), $password.val(), function(data) {
+        hideSpinner();
         if(data.success) {
           showAlert($alert, "success", "User successfully created");
           setTimeout(function() {
@@ -55,7 +57,9 @@ SecureChat.Panel = (function () {
         showAlert($alert, "warning", "All fields are required");
         return false;
       }
+      showSpinner($(this));
       SecureChat.Auth.doAuthenticate($username.val(), $password.val(), function(data) {
+        hideSpinner();  
         if(data.success) {
           showAlert($alert, "success", "User successfully authenticated");
           setTimeout(function() {
@@ -79,7 +83,9 @@ SecureChat.Panel = (function () {
         showAlert($alert, "warning", "Enter contact to add");
         return false;
       }
+      showSpinner($(this));
       SecureChat.API.addContact($contact.val(), function(data) {
+        hideSpinner();
         if(data.success) {
           $contact.val("");
           showContacts(data.contacts);
@@ -116,7 +122,9 @@ SecureChat.Panel = (function () {
         keyEncryptedBySender = SecureChat.RSA.encrypt(encryptedMessageAndKey[1]);
       }
 
+      showSpinner($(".spinner-holder"));
       SecureChat.API.addMessage($receiver.val(), message, key, keyEncryptedBySender, $isEncrypted.is(":checked"), function(data) {
+        hideSpinner();
         if(data.success) {
           $message.val("");
           showMessages(data.messages);
@@ -181,7 +189,7 @@ SecureChat.Panel = (function () {
     $(document.body).on("click", "#contactList li", function() {
       var username = $(this).data("username");
       $("#receiver").val(username);
-      $("span#receiverName").text(username);
+      $("span#receiverName").text("with " + username);
       showMessagesTab();
     });
 
@@ -279,7 +287,9 @@ SecureChat.Panel = (function () {
     if (!receiver) {
       return;
     }
+    showSpinner($(".spinner-holder"));
     SecureChat.API.getMessages(receiver, getNewestMessageDate(), function(data) {
+      hideSpinner();
       if (data === null || !data.success) {
         doLogout();
         return;
@@ -371,6 +381,14 @@ SecureChat.Panel = (function () {
       .find("span.alert-text")
       .text("")
       ;
+  }
+
+  function showSpinner(target) {
+    target.prepend($("<div class='spinner'></div>"));
+  }
+
+  function hideSpinner() {
+    $(".spinner").remove();
   }
 
   return {
