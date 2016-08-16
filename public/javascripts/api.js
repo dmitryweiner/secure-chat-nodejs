@@ -2,7 +2,7 @@ var SecureChat = SecureChat || {};
 
 SecureChat.API = (function () {
 
-  var apiUrl = "api";
+  var apiUrl = window.location.href + "/api";
 
   function register(username, password, callback) {
     $.post(
