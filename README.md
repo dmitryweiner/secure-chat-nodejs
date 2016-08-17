@@ -38,6 +38,7 @@ openssl genrsa -out priv.pem 1024
 openssl rsa -pubout -in priv.pem -out pub.pem
 ```
 Or just go to http://travistidwell.com/jsencrypt/demo/ and generate it online
+
 4. Enter and save it in you profile tab
 5. Go to "Contacts" tab, enter your friend's username (you should also send your username to your friend by alternative channel)
 6. If it was successfully added, click on nickname in contact-list
