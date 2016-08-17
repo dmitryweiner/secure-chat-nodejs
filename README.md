@@ -33,12 +33,12 @@ http://127.0.0.1:3000/
 1. Register new account via registration form
 2. Login to the site
 3. Generate a pair of RSA keys
+* It can be generated in LINUX via openssl package: 
 ```
 openssl genrsa -out priv.pem 1024
 openssl rsa -pubout -in priv.pem -out pub.pem
 ```
-Or just go to http://travistidwell.com/jsencrypt/demo/ and generate it online
-
+* Or just go to http://travistidwell.com/jsencrypt/demo/ and generate it online
 4. Enter and save it in you profile tab
 5. Go to "Contacts" tab, enter your friend's username (you should also send your username to your friend by alternative channel)
 6. If it was successfully added, click on nickname in contact-list
