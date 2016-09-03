@@ -5,32 +5,37 @@ var mongoose = require('mongoose');
 var User   = require('../../models/user');
 
 router.get('/', function(req, res, next) {
-  User.findOne({"username": req.authUser.username}, function(err, user) { // TODO: may be we should search by Object ID
-    var contacts;
-    if (err) { next(next); }
-    else if (user) {
-      User.populate(user, {
-        path: 'contacts',
-        model: 'User'
-      }, function (err, user) {
-        var contacts = user.contacts.map(function(contact) {
+  User
+    .findOne({"username": req.authUser.username})
+    .populate({
+      path: 'contacts',
+      model: 'User'
+    })
+    .populate({
+      path: 'requests',
+      model: 'User'
+    })
+    .exec(function (err, user) {
+      if (err) {
+        return res.json({
+          success: false,
+          message: err.message
+        });
+      }
+      res.json({
+        success: true,
+        contacts: user.contacts.map(function(currentUser) {
           return {
-            username: contact.username
+            username: currentUser.username
           };
-        });
-        res.json({
-          success: true,
-          contacts: contacts
-        });
+        }),
+        requests: user.requests.map(function(currentUser) {
+          return {
+            username: currentUser.username
+          };
+        })
       });
-      return;
-    }
-    res.json({
-      success: false,
-      message: "No user found",
-      contacts: []
     });
-  });
 });
 
 router.post('/', function(req, res, next) {
@@ -54,8 +59,7 @@ router.post('/', function(req, res, next) {
         if (!userToAdd) {
           res.json({
             success: false,
-            message: "User not found",
-            contacts: contacts
+            message: "User not found"
           });
           return;
         }
@@ -63,30 +67,74 @@ router.post('/', function(req, res, next) {
         if (String(userToAdd._id) === String(currentUser._id)) {
           res.json({
             success: false,
-            message: "You can not add yourself to contacts",
-            contacts: contacts
+            message: "You can not add yourself to contacts"
           });
           return;
         }
 
         currentUser.contacts.push(userToAdd);
-        contacts.push({
-          username: userToAdd.username
+        userToAdd.requests.push(currentUser);
+
+        Promise.all([
+          currentUser.save(),
+          userToAdd.save()
+        ]).then(function() {
+          res.json({
+            success: true,
+            message: "Contact added successfully"
+          });
+        }).catch(function(err) {
+          res.json({
+            success: false,
+            message: err.message
+          });
+        });
+      }
+    });
+
+  });
+});
+
+router.delete('/:username', function(req, res, next) {
+  Promise.all([
+    User.findOne({username: req.params.username}),
+    User.findOne({username: req.authUser.username})
+  ]).then(function(results) {
+    var userToDelete = results[0];
+    var currentUser = results[1];
+    User.populate(currentUser, {
+      path: 'contacts',
+      model: 'User'
+    }, function (err, user) {
+      if (err) { next(next); }
+      else {
+        var contacts = user.contacts.map(function(contact) {
+          return {
+            username: contact.username
+          };
+        });
+        if (!userToDelete) {
+          res.json({
+            success: false,
+            message: "User not found"
+          });
+          return;
+        }
+
+        currentUser.contacts = currentUser.contacts.filter(function(user) {
+          return String(userToDelete._id) !== String(user._id);
         });
 
-        currentUser.save(function (err) {
+        currentUser.save(function(err) {
           if (err) {
-            res.json({
+            return res.json({
               success: false,
-              message: err.message,
-              contacts: contacts
+              message: err.message
             });
-            return;
           }
           res.json({
             success: true,
-            message: "User saved successfully",
-            contacts: contacts
+            message: "Contact deleted successfully"
           });
         });
       }

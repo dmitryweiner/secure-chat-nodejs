@@ -88,7 +88,7 @@ SecureChat.Panel = (function () {
         hideSpinner();
         if(data.success) {
           $contact.val("");
-          showContacts(data.contacts);
+          loadAndShowContacts();
         } else {
           showAlert($alert, "warning", data.message);
         }
@@ -197,6 +197,45 @@ SecureChat.Panel = (function () {
       showMessagesTab();
     });
 
+    $(document.body).on("click", ".delete-contact", function() {
+      var $alert = $("#contacts .alert");
+      var username = $(this).closest(".list-group-item").data("username");
+      SecureChat.API.deleteContact(username, function(data) {
+        if(data && data.success) {
+          loadAndShowContacts();
+        } else {
+          showAlert($alert, "warning", data ? data.message : "Server error");
+        }
+      });
+      return false;
+    });
+
+    $(document.body).on("click", ".approve-request", function() {
+      var $alert = $("#contacts .alert");
+      var username = $(this).closest(".list-group-item").data("username");
+      SecureChat.API.approveRequest(username, function(data) {
+        if(data && data.success) {
+          loadAndShowContacts();
+        } else {
+          showAlert($alert, "warning", data ? data.message : "Server error");
+        }
+      });
+      return false;
+    });
+
+    $(document.body).on("click", ".delete-request", function() {
+      var $alert = $("#contacts .alert");
+      var username = $(this).closest(".list-group-item").data("username");
+      SecureChat.API.deleteRequest(username, function(data) {
+        if(data && data.success) {
+          loadAndShowContacts();
+        } else {
+          showAlert($alert, "warning", data ? data.message : "Server error");
+        }
+      });
+      return false;
+    });
+
     $("#addMessage").keypress(function(event) {
       if (event.which == 13) {
         event.preventDefault();
@@ -284,7 +323,8 @@ SecureChat.Panel = (function () {
         doLogout();
         return;
       }
-      showContacts(data.contacts);
+      showContactsAndRequests($("#contactList"), data.contacts);
+      showContactsAndRequests($("#requestList"), data.requests);
     });
   }
 
@@ -326,11 +366,15 @@ SecureChat.Panel = (function () {
     });
   }
 
-  function showContacts(contacts) {
-    $("#contactList li").remove();
+  function showContactsAndRequests(target, contacts) {
+    target.find("li:visible").remove();
     contacts.forEach(function(contact) {
-      //TODO: escape username
-      $("#contactList").append($("<li class='list-group-item' data-username='" + contact.username + "'></li>").text(contact.username));
+      var element = target.find("li:eq(0)").clone();
+      element
+        .css({"display": ""})
+        .attr("data-username", contact.username)
+        .find(".list-group-item-text").text(contact.username);
+      element.appendTo(target);
     });
   }
 

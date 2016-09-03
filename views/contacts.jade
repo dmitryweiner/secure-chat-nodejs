@@ -1,4 +1,15 @@
-div.col-md-6.col-xs-12
+.col-md-6.col-md-push-6.col-xs-12
+  h3 Requests
+  ul.list-group(id="requestList" style="margin-top:10px")
+    li.list-group-item(style="display:none;")
+      span.list-group-item-text
+      .btn.btn-xs.btn-danger.pull-right
+        span.glyphicon.glyphicon-remove.delete-request(aria-hidden="true")
+      .btn.btn-xs.btn-info.pull-right(style="margin-right: 5px")
+        span.glyphicon.glyphicon-ok.approve-request(aria-hidden="true")
+
+.col-md-6.col-md-pull-6.col-xs-12
+  h3 Contact list
   div(class="alert alert-warning fade in hidden" role="alert")
     span.alert-text
 
@@ -8,3 +19,8 @@ div.col-md-6.col-xs-12
     button(type="submit" class="btn btn-default") Add
 
   ul.list-group.clickable(id="contactList" style="margin-top:10px")
+    li.list-group-item(style="display:none;")
+      span.list-group-item-text
+      .btn.btn-xs.btn-danger.pull-right
+        span.glyphicon.glyphicon-remove.delete-contact(aria-hidden="true")
+

@@ -9,6 +9,7 @@ var config = require('../../config');
 
 var apiContacts = require('./contacts');
 var apiMessages = require('./messages');
+var apiRequests = require('./requests');
 
 
 router.post('/authenticate', function(req, res, next) {
@@ -133,5 +134,6 @@ router.use(function(req, res, next) {
 
 router.use('/contacts', apiContacts);
 router.use('/messages', apiMessages);
+router.use('/requests', apiRequests);
 
 module.exports = router;
