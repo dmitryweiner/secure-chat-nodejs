@@ -131,14 +131,17 @@ function getMessages(sender, receiver, newest, callback) {
 
   Message.find(request,
     null,
-    {sort: {"dateCreated": 1}}
-  ).limit(20).exec(
+    {
+      sort: {"dateCreated": -1},
+      limit: 20
+    }
+  ).exec(
     function(err, messages) {
       if (err) {
         console.log("error", err.message);
         callback(null);
       }
-      var filteredMessages = messages.map(function(message) {
+      var filteredMessages = messages.reverse().map(function(message) {
         return {
           messageText: message.messageText,
           dateCreated: message.dateCreated,
