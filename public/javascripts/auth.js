@@ -17,7 +17,7 @@ SecureChat.Auth = (function () {
 
   function doAuthenticate(username, password, callback) {
     SecureChat.API.authenticate(username, password, function(data) {
-      if (data.success) {
+      if (data && data.success) {
         SecureChat.LocalStorage.save(tokenKey, data.token);
         SecureChat.LocalStorage.save(userKey, JSON.stringify(data.user));
         currentUser = data.user;

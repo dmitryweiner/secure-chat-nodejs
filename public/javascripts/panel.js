@@ -33,7 +33,7 @@ SecureChat.Panel = (function () {
       showSpinner($(this));
       SecureChat.API.register($username.val(), $password.val(), function(data) {
         hideSpinner();
-        if(data.success) {
+        if(data && data.success) {
           showAlert($alert, "success", "User successfully created");
           setTimeout(function() {
             showLoginTab();
@@ -42,7 +42,7 @@ SecureChat.Panel = (function () {
           $password.val("");
           $passwordReenter.val("");
         } else {
-          showAlert($alert, "warning", data.message);
+          showAlert($alert, "warning", data ? data.message : "Unable to connect to server");
         }
       });
       return false;
@@ -60,7 +60,7 @@ SecureChat.Panel = (function () {
       showSpinner($(this));
       SecureChat.Auth.doAuthenticate($username.val(), $password.val(), function(data) {
         hideSpinner();  
-        if(data.success) {
+        if(data && data.success) {
           showAlert($alert, "success", "User successfully authenticated");
           setTimeout(function() {
             redrawPanel();
@@ -69,7 +69,7 @@ SecureChat.Panel = (function () {
           $password.val("");
           panelState = PanelStates.LOGGED;
         } else {
-          showAlert($alert, "warning", data.message);
+          showAlert($alert, "warning", data ? data.message : "Unable to connect to server");
         }
       });
       return false;
