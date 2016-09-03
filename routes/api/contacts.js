@@ -73,7 +73,13 @@ router.post('/', function(req, res, next) {
         }
 
         currentUser.contacts.push(userToAdd);
-        userToAdd.requests.push(currentUser);
+        if (!userToAdd.contacts.some(function(userId) {
+            return String(userId) === String(currentUser._id);
+          }) && !userToAdd.requests.some(function(userId) {
+            return String(userId) === String(currentUser._id);
+          })) {
+          userToAdd.requests.push(currentUser);
+        }
 
         Promise.all([
           currentUser.save(),
