@@ -48,7 +48,7 @@ router.get('/:receiver/:newest?', function(req, res) {
 });
 
 
-router.post('/add', function(req, res) {
+router.post('/', function(req, res) {
   User.findOne({username: req.body.receiver}, function(err, receiver) {
     if (err) {
       console.log("error", err.message);

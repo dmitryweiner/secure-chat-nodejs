@@ -33,7 +33,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.post('/add', function(req, res, next) {
+router.post('/', function(req, res, next) {
   Promise.all([
     User.findOne({username: req.body.userToAdd}),
     User.findOne({username: req.authUser.username})

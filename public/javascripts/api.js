@@ -62,7 +62,7 @@ SecureChat.API = (function () {
     }
 
     $.ajax({
-      url: apiUrl + "/contacts/add",
+      url: apiUrl + "/contacts",
       method: "POST",
       data: {
         userToAdd: userToAdd
@@ -112,7 +112,7 @@ SecureChat.API = (function () {
     }
 
     $.ajax({
-      url: apiUrl + "/messages/add",
+      url: apiUrl + "/messages",
       method: "POST",
       data: {
         receiver: receiver,
