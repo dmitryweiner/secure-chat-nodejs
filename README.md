@@ -1,5 +1,6 @@
 # Secure chat
-Secure chat with RSA and AES end to end encryption 
+Secure chat with RSA and AES end to end encryption
+See live demo here: [dmitry.weiner.fvds.ru/secure-chat](http://dmitry.weiner.fvds.ru/secure-chat)
 
 ##Technologies used:
 ### Backend:
@@ -30,7 +31,7 @@ Then go to:
 http://127.0.0.1:3000/
 
 ## How to use
-1. Register new account via registration form
+1. Register new account using registration form
 2. Login to the site
 3. Generate a pair of RSA keys
   1. It can be generated in LINUX via openssl package: 
@@ -43,6 +44,6 @@ http://127.0.0.1:3000/
 5. Go to "Contacts" tab, enter your friend's username (you should also send your username to your friend by alternative channel)
 6. If it was successfully added, click on nickname in contact-list
 7. You will be moved to "Messages" tab
-8. Enter your friend's public RSA key which was sent to you by alternative ways 
-9. And send her your public RSA key
-10. If you wish to send your messages securely, check the checkbox "Encrypted" (You should set up keys first)
+8. Insert your friend's public RSA key (which was sent to you by alternative ways) into corresponging field 
+9. And send her/him your public RSA key
+10. If you wish to send your messages securely, check the checkbox "Encrypted" (You will be warned if you didn't set the keys)

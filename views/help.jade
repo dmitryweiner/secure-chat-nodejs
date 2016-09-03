@@ -1,0 +1,20 @@
+.row
+  .col-md-12.col-xs-12.help
+    ol
+      li Register new account using registration form
+      li Login to the site
+      li Generate a pair of RSA keys
+      li It can be generated in LINUX via openssl package:
+        blockquote
+          p openssl genrsa -out priv.pem 1024
+          p openssl rsa -pubout -in priv.pem -out pub.pem
+        | Or just go to
+        a(href"http://travistidwell.com/jsencrypt/demo/") http://travistidwell.com/jsencrypt/demo/
+        | and generate it online
+      li Enter and save it in you profile tab
+      li Go to "Contacts" tab, enter your friend's username (you should also send your username to your friend by alternative channel)
+      li If it was successfully added, click on nickname in contact-list
+      li You will be moved to "Messages" tab
+      li Insert your friend's public RSA key (which was sent to you by alternative ways) into corresponging field
+      li And send her/him your public RSA key
+      li If you wish to send your messages securely, check the checkbox "Encrypted" (You will be warned if you didn't set the keys)

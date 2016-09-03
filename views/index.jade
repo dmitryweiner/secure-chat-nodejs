@@ -10,6 +10,8 @@ block content
       li(role="presentation")
         a(href="#messages" aria-controls="messages" role="tab" data-toggle="tab") Messages&nbsp;
           span#receiverName
+      li(role="presentation")
+        a(href="#help" aria-controls="help" role="tab" data-toggle="tab") Help
 
     .tab-content(style="padding-top:10px;")
       div(role="tabpanel" class="tab-pane active" id="profile")
@@ -20,3 +22,6 @@ block content
 
       div(role="tabpanel" class="tab-pane" id="messages")
         include messages
+
+      div(role="tabpanel" class="tab-pane" id="help")
+        include help

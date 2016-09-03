@@ -8,5 +8,6 @@ module.exports = mongoose.model('User', new Schema({
   password: String,
   salt: String,
   isAdmin: Boolean,
-  contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+  contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+  requests: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
 }));
