@@ -137,6 +137,10 @@ SecureChat.Panel = (function () {
     
     $("#ownKeysForm").on("submit", function() {
       var $alert = $(".own-keys .alert");
+      if (!SecureChat.RSA.checkOwnKeys($("#ownPrivateKey").val(), $("#ownPublicKey").val())) {
+        showAlert($alert, "warning", "Something wrong with your keys. Regenerate it, please");
+        return false;
+      }
       SecureChat.RSA.saveOwnPublicKey($("#ownPublicKey").val());
       SecureChat.RSA.saveOwnPrivateKey($("#ownPrivateKey").val());
       showAlert($alert, "success", "Successfully saved");
@@ -197,6 +201,27 @@ SecureChat.Panel = (function () {
       if (event.which == 13) {
         event.preventDefault();
         $("#addMessageForm").submit();
+      }
+    });
+
+    $(document.body).on("click", "input#isEncrypted", function() {
+      if (!$(this).is(":checked")) {
+        return;
+      }
+
+      var $alert = $("#messages .alert:eq(1)");
+      var $receiver = $("#receiver");
+      hideAlert($alert);
+
+      if (!SecureChat.RSA.checkOwnKeys()) {
+        showAlert($alert, "warning", "Please check your RSA keys!");
+        $(this).prop('checked', false);
+        return;
+      }
+
+      if (!SecureChat.RSA.getContactPublicKey($receiver.val())) {
+        showAlert($alert, "warning", "Please check if RSA key of your friend is filled!");
+        $(this).prop('checked', false);
       }
     });
 

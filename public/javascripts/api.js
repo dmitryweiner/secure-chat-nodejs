@@ -2,7 +2,7 @@ var SecureChat = SecureChat || {};
 
 SecureChat.API = (function () {
 
-  var apiUrl = window.location.href + "/api";
+  var apiUrl = window.location.href + "api";
 
   function register(username, password, callback) {
     $.post(
@@ -18,16 +18,20 @@ SecureChat.API = (function () {
   }
 
   function authenticate(username, password, callback) {
-    $.post(
-      apiUrl + "/authenticate",
-      {
+    $.ajax({
+      url: apiUrl + "/authenticate",
+      method: "POST",
+      data: {
         username: username,
         password: password
       },
-      function(data) {
+      success: function(data) {
         callback(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        callback(null);
       }
-    );
+    });
   }
 
   function getContacts(callback) {

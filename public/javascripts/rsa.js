@@ -31,9 +31,11 @@ SecureChat.RSA = (function () {
     return SecureChat.LocalStorage.load(publicPrefix + '_' + username);
   }
 
-  function encrypt(message, receiver) {
+  function encrypt(message, receiver, key) {
     var encrypt = new JSEncrypt();
-    if (!receiver) {
+    if (key) {
+      encrypt.setPublicKey(key);
+    } else if (!receiver) {
       encrypt.setPublicKey(getOwnPublicKey());
     } else {
       encrypt.setPublicKey(getContactPublicKey(receiver));
@@ -41,10 +43,26 @@ SecureChat.RSA = (function () {
     return encrypt.encrypt(message);
   }
 
-  function decrypt(message) {
+  function decrypt(message, key) {
     var encrypt = new JSEncrypt();
-    encrypt.setPrivateKey(getOwnPrivateKey());
+    if (key) {
+      encrypt.setPrivateKey(key);
+    } else {
+      encrypt.setPrivateKey(getOwnPrivateKey());
+    }
     return encrypt.decrypt(message);
+  }
+
+  /**
+   * Checks user keys.
+   * If parameters ommited, uses stored keys.
+   *
+   * @param privateKey
+   * @param publicKey
+   * @returns {boolean}
+   */
+  function checkOwnKeys(privateKey, publicKey) {
+    return decrypt(encrypt("test", null, publicKey), privateKey) === "test";
   }
 
   return {
@@ -55,6 +73,7 @@ SecureChat.RSA = (function () {
     saveContactPublicKey: saveContactPublicKey,
     getContactPublicKey: getContactPublicKey,
     encrypt: encrypt,
-    decrypt: decrypt
+    decrypt: decrypt,
+    checkOwnKeys: checkOwnKeys
   };
 })();
