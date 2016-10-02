@@ -15,6 +15,17 @@ SecureChat.Auth = (function () {
     return SecureChat.LocalStorage.load(tokenKey);
   }
 
+  function doRegister(username, password, callback) {
+    SecureChat.API.register(username, password, function(data) {
+      if (data && data.success) {
+        SecureChat.LocalStorage.save(tokenKey, data.token);
+        SecureChat.LocalStorage.save(userKey, JSON.stringify(data.user));
+        currentUser = data.user;
+      }
+      callback(data);
+    });
+  }
+
   function doAuthenticate(username, password, callback) {
     SecureChat.API.authenticate(username, password, function(data) {
       if (data && data.success) {
@@ -31,7 +42,7 @@ SecureChat.Auth = (function () {
     SecureChat.LocalStorage.remove(userKey);
   }
 
-  function getCurrenUser() {
+  function getCurrentUser() {
     if (!isLogged()) {
       return null;
     }
@@ -45,7 +56,8 @@ SecureChat.Auth = (function () {
     isLogged: isLogged,
     getToken: getToken,
     doAuthenticate: doAuthenticate,
+    doRegister: doRegister,
     doLogout: doLogout,
-    getCurrenUser: getCurrenUser
+    getCurrentUser: getCurrentUser
   };
 })();

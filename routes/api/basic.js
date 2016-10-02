@@ -90,8 +90,16 @@ router.post('/register', function(req, res, next) {
         });
         return;
       }
+      var token = jwt.sign(newUser.toObject(), config.secret, {
+        expiresIn: 1440 * 1000
+      });
       res.json({
         success: true,
+        token: token,
+        user: {
+          username: newUser.username,
+          isAdmin: newUser.isAdmin
+        },
         message: "User successfully saved"
       });
     });

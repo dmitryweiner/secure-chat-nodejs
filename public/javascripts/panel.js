@@ -31,16 +31,17 @@ SecureChat.Panel = (function () {
       }
 
       showSpinner($(this));
-      SecureChat.API.register($username.val(), $password.val(), function(data) {
+      SecureChat.Auth.doRegister($username.val(), $password.val(), function(data) {
         hideSpinner();
         if(data && data.success) {
           showAlert($alert, "success", "User successfully created");
           setTimeout(function() {
-            showLoginTab();
+            redrawPanel();
           }, 1000);
           $username.val("");
           $password.val("");
           $passwordReenter.val("");
+          panelState = PanelStates.LOGGED;
         } else {
           showAlert($alert, "warning", data ? data.message : "Unable to connect to server");
         }
@@ -272,7 +273,7 @@ SecureChat.Panel = (function () {
   function redrawPanel() {
     if (panelState == PanelStates.LOGGED) {
       //show username
-      var currentUser = SecureChat.Auth.getCurrenUser();
+      var currentUser = SecureChat.Auth.getCurrentUser();
       $("strong.user-name").text(currentUser.username);
       $("a.login-link").text("logout");
       $("#currentUser").show().find("strong").text(currentUser.username);
