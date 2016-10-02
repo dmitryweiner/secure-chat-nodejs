@@ -84,7 +84,14 @@ router.post('/', function(req, res, next) {
       return;
     }
 
-    currentUser.contacts.push(userToAdd);
+    // add user from request to contacts
+    if (!currentUser.contacts.some(function(user) {
+        return String(userToAdd._id) === String(user._id);
+      })) {
+      currentUser.contacts.push(userToAdd);
+    }
+
+    // delete request
     currentUser.requests = currentUser.requests.filter(function(user) {
       return String(userToAdd._id) !== String(user._id);
     });
