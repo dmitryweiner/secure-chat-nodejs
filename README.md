@@ -1,6 +1,6 @@
 # Secure chat
 Secure chat with RSA and AES end to end encryption
-See live demo here: [dmitry.weiner.fvds.ru/secure-chat](http://dmitry.weiner.fvds.ru/secure-chat)
+See live demo [here](http://secure-chat.dweiner.ru/)
 
 ##Technologies used:
 ### Backend:
